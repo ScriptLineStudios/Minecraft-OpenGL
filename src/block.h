@@ -2,9 +2,10 @@
 #define BLOCK
 
 struct block {
-    GLuint VAO, VBO, EBO, shaderProgram;
+    GLuint VAO, VBO, EBO, shaderProgram, texture;
     mat4 model;
 };
+
   
 typedef struct block Block;
 

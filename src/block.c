@@ -4,39 +4,64 @@
 #include<cglm/mat4.h>
 #include<cglm/vec3.h>
 #include<cglm/clipspace/persp.h>
+#include<stb/stb.h>
 
 GLfloat vertices[] =
 {
-        // front
-    -0.5, -0.5,  0.5,   1.0f, 0.0f, 0.0f,
-    0.5, -0.5,  0.5,    0.0f, 1.0f, 0.0f,
-    0.5,  0.5,  0.5,    0.0f, 0.0f, 0.0f,
-    -0.5,  0.5,  0.5,   1.0f, 0.0f, 0.0f,
-// back
-    -0.5, -0.5, -0.5,   1.0f, 0.0f, 1.0f,
-    0.5, -0.5, -0.5,    0.0f, 1.0f, 0.0f,
-    0.5,  0.5, -0.5,    0.0f, 1.0f, 1.0f,
-    -0.5,  0.5, -0.5,   0.0f, 0.0f, 0.0f,
+   -0.5, -0.5,  -0.5,   1.0f, 0.0f, 0.0f,    0.0f, 0.0f, // bottom left back (0)
+    0.5, -0.5,  -0.5,   0.0f, 1.0f, 0.0f,    0.0f, 1.0f, // bottom right back(1)
+    0.5,  0.5,  -0.5,   0.0f, 0.0f, 0.0f,    1.0f, 1.0f, // top right back(2)
+   -0.5,  0.5,  -0.5,   1.0f, 0.0f, 0.0f,    1.0f, 0.0f, //top left back(3)
+
+   -0.5, -0.5,  0.5,   1.0f, 0.0f, 0.0f,    0.0f, 0.0f, // bottom left front(4)
+    0.5, -0.5,  0.5,   0.0f, 1.0f, 0.0f,    0.0f, 1.0f, // bottom right front(5)
+    0.5,  0.5,  0.5,   0.0f, 0.0f, 0.0f,    1.0f, 1.0f, // top right front(6)
+   -0.5,  0.5,  0.5,   1.0f, 0.0f, 0.0f,    1.0f, 0.0f, //top left front(7)
+
+   -0.5,  0.5, -0.5,   1.0f, 0.0f, 0.0f,    0.0f, 0.0f, // top left back(8)
+    0.5,  0.5, -0.5,   0.0f, 0.0f, 0.0f,    0.0f, 1.0f, // top right back(9)
+    0.5,  0.5,  0.5,   0.0f, 0.0f, 0.0f,    1.0f, 1.0f, // top right front (10)
+   -0.5,  0.5,  0.5,   1.0f, 0.0f, 0.0f,    1.0f, 0.0f, //top left front(11)
+
+   -0.5, -0.5,  -0.5,   1.0f, 0.0f, 0.0f,    0.0f, 0.0f, // bottom left back(12)
+    0.5, -0.5,  -0.5,   0.0f, 1.0f, 0.0f,    0.0f, 1.0f, // bottom right back(13)
+    0.5, -0.5,  0.5,   0.0f, 1.0f, 0.0f,    1.0f, 1.0f, // bottom right front (14)
+   -0.5, -0.5,  0.5,   1.0f, 0.0f, 0.0f,    1.0f, 0.0f, //bottom left front(15)
+
+   -0.5,  0.5, -0.5,   1.0f, 0.0f, 0.0f,     1.0f, 0.0f, // top left back(16)
+   -0.5,  0.5,  0.5,   1.0f, 0.0f, 0.0f,     1.0f, 1.0f, // top left front(17)
+   -0.5, -0.5,  0.5,   1.0f, 0.0f, 0.0f,     0.0f, 1.0f, // bottom left front(18)
+   -0.5, -0.5,  -0.5,  1.0f, 0.0f, 0.0f,     0.0f, 0.0f, // bottom left back (19)
+
+    0.5,  0.5, -0.5,   0.0f, 0.0f, 0.0f,    1.0f, 0.0f, // top right back(20)
+    0.5,  0.5,  0.5,   0.0f, 0.0f, 0.0f,    1.0f, 1.0f, // top right front(21)
+    0.5, -0.5,  0.5,   0.0f, 1.0f, 0.0f,    0.0f, 1.0f, // bottom right front(22)
+    0.5, -0.5,  -0.5,   0.0f, 1.0f, 0.0f,    0.0f, 0.0f, // bottom right back(23)
 };
 
 GLuint indices[] =
 {
     0, 1, 2,
     2, 3, 0,
-    1, 5, 6,
-    6, 2, 1,
+    
+    20, 21, 22,
+    22, 23, 20,
+
     7, 6, 5,
     5, 4, 7,
-    4, 0, 3,
-    3, 7, 4,
-    4, 5, 1,
-    1, 0, 4,
-    3, 2, 6,
-    6, 7, 3
+
+    16, 17, 18,
+    18, 19, 16,
+
+    12, 13, 14,
+    14, 15, 12,
+
+    8, 9, 10,
+    10, 11, 8
 };
 
 struct block {
-    GLuint VAO, VBO, EBO, shaderProgram;
+    GLuint VAO, VBO, EBO, shaderProgram, texture;
     mat4 * model;
 };
   
@@ -47,9 +72,11 @@ typedef struct block Block;
 const char* vertexShaderSource = GLSL(
     layout (location = 0) in vec3 aPos;
     layout (location = 1) in vec3 aColor;
-    
+    layout (location = 2) in vec2 aTex;
+
     out vec3 color;
 
+    out vec2 texCoord;
 
     uniform mat4 model;
     uniform mat4 view; 
@@ -58,15 +85,19 @@ const char* vertexShaderSource = GLSL(
     {
         color = aColor;
         gl_Position = proj * view * model * vec4(aPos, 0.5f);
+        texCoord = aTex;
     }
 );
 
 const char* fragmentShaderSource = GLSL(
     in vec3 color;
     out vec3 FragColor;
+    in vec2 texCoord;
+
+    uniform sampler2D tex0;
     void main()
     {
-        FragColor = color;
+        FragColor = texture(tex0, texCoord).rgb;
     }
 );
 
@@ -104,15 +135,46 @@ Block create_buffers(){
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	stbi_set_flip_vertically_on_load(false);
+    int imgWidth, imgHeight, colors;
+    unsigned char* bytes = stbi_load("/home/scriptline/Minecraft-OpenGL/src/grass.png", &imgWidth, &imgHeight, &colors, 0);
+
+    if (!bytes){
+        printf("Unable to load image for the following reason: %s \n", stbi_failure_reason());
+    }
+
+    GLuint texture;
+    glGenTextures(1, &texture);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imgWidth, imgHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, bytes);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    stbi_image_free(bytes);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    GLuint tex0Uni = glGetUniformLocation(shaderProgram, "tex0");
+    glUseProgram(shaderProgram);
+    glUniform1i(tex0Uni, 0);
 
     mat4 model;
     glm_mat4_identity(model);
@@ -122,5 +184,6 @@ Block create_buffers(){
     block.VBO = VBO;
     block.EBO = EBO;
     block.shaderProgram = shaderProgram;
+    block.texture = texture;
     return block;
 }

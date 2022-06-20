@@ -4,16 +4,12 @@
 #include<cglm/mat4.h>
 #include<cglm/vec3.h>
 #include<cglm/clipspace/persp.h>
+#include<stb/stb.h>
 
 #include "block.h"
 #include "camera.h"
 
-//#include<stb/stb_image.h> 
 #define GLSL(src) "#version 330 core\n" #src
-// Vertex Shader source code
-
-
-
 
 int main()
 {
@@ -34,8 +30,8 @@ int main()
 	gladLoadGL();
 	glViewport(0, 0, 800, 800);
 
-	Block blocks[100] = {};
-	for (int i = 0; i < 100; i++){
+	Block blocks[16] = {};
+	for (int i = 0; i < 16; i++){
 		blocks[i] = create_buffers();
 	}
 
@@ -47,20 +43,26 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 
 
+
 	GLuint indices[] =
 	{
 		0, 1, 2,
 		2, 3, 0,
+		
 		1, 5, 6,
 		6, 2, 1,
+
 		7, 6, 5,
 		5, 4, 7,
+
 		4, 0, 3,
 		3, 7, 4,
-		4, 5, 1,
-		1, 0, 4,
-		3, 2, 6,
-		6, 7, 3
+
+		12, 13, 14,
+		14, 15, 12,
+
+		8, 9, 10,
+		10, 11, 8
 	};
 
 	Camera camera;
@@ -68,6 +70,7 @@ int main()
 
 	while (!glfwWindowShouldClose(window))
 	{
+		rotation += 0.1;
 		glClearColor(0.07f, 0.13f, 0.17f, 0.5f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -81,13 +84,16 @@ int main()
 
 		handle_movement(&camera, window);
 
-		for (int i = 0; i < 100; i++){
+		for (int i = 0; i < 16; i++){
 			glm_mat4_identity(blocks[i].model);
 
-			glm_translate(blocks[i].model, (vec3){(float)i*4, 0.0f, 0.0f});
+			glm_rotate(blocks[i].model, glm_rad(0), (vec3){0.0f, 1.0f, 0.0f});
+			glm_translate(blocks[i].model, (vec3){(float)i, 0, 0.0f});
+
 
 			glUseProgram(blocks[i].shaderProgram);
-			
+
+
 			int modelLoc = glGetUniformLocation(blocks[i].shaderProgram, "model");
 			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, (const GLfloat *)blocks[i].model);
 			int viewLoc = glGetUniformLocation(blocks[i].shaderProgram, "view");
@@ -95,20 +101,10 @@ int main()
 			int projLoc = glGetUniformLocation(blocks[i].shaderProgram, "proj");
 			glUniformMatrix4fv(projLoc, 1, GL_FALSE, (const GLfloat *)proj);
 
+		    glBindTexture(GL_TEXTURE_2D, blocks[i].texture);
+			
 			glBindVertexArray(blocks[i].VAO);
 			glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(int), GL_UNSIGNED_INT, 0);
-
-			/*glUseProgram(blocks[1].shaderProgram);
-			
-			int modelLoc2 = glGetUniformLocation(blocks[1].shaderProgram, "model");
-			glUniformMatrix4fv(modelLoc2, 1, GL_FALSE, (const GLfloat *)blocks[1].model);
-			int viewLoc2 = glGetUniformLocation(blocks[1].shaderProgram, "view");
-			glUniformMatrix4fv(viewLoc2, 1, GL_FALSE, (const GLfloat *)view);
-			int projLoc2 = glGetUniformLocation(blocks[1].shaderProgram, "proj");
-			glUniformMatrix4fv(projLoc2, 1, GL_FALSE, (const GLfloat *)proj);
-
-			glBindVertexArray(blocks[1].VAO);
-			glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(int), GL_UNSIGNED_INT, 0);*/
 		}
 
 
