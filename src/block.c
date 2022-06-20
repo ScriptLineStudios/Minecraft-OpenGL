@@ -49,7 +49,7 @@ GLuint indices[] =
 
     7, 6, 5,
     5, 4, 7,
-
+    //left
     16, 17, 18,
     18, 19, 16,
 
@@ -61,7 +61,8 @@ GLuint indices[] =
 };
 
 struct block {
-    GLuint VAO, VBO, EBO, shaderProgram, texture;
+    GLuint VAO, VBO, EBO, shaderProgram, texture, x, y, z;
+
     mat4 * model;
 };
   
@@ -102,7 +103,7 @@ const char* fragmentShaderSource = GLSL(
 );
 
 
-Block create_buffers(){
+Block create_buffers(int _x, int _y, int _z){
     Block block;
 
 	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -185,5 +186,19 @@ Block create_buffers(){
     block.EBO = EBO;
     block.shaderProgram = shaderProgram;
     block.texture = texture;
+
+    GLuint x = _x;
+    GLuint y = _y;
+    GLuint z = _z;
+
+
+
+
+    block.x = x;
+    block.y = y;
+    block.z = z;
+
+	//printf("%d \n", block.x);
+
     return block;
 }

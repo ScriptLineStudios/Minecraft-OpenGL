@@ -5,9 +5,11 @@
 #include<cglm/vec3.h>
 #include<cglm/clipspace/persp.h>
 #include<stb/stb.h>
+#include<stdlib.h>
 
 #include "block.h"
 #include "camera.h"
+#include "chunk.h"
 
 #define GLSL(src) "#version 330 core\n" #src
 
@@ -30,14 +32,13 @@ int main()
 	gladLoadGL();
 	glViewport(0, 0, 800, 800);
 
-	Block blocks[16] = {};
-	for (int i = 0; i < 16; i++){
-		blocks[i] = create_buffers();
-	}
+	/*Block blocks[256];
+	for (int i = 0; i < 256; i++){
+		chunk.blocks[i] = create_buffers(i, 0, 0);
+	}*/
 
-    float rotation = 0.0f;
-    double prevTime = glfwGetTime();
-
+	Chunk chunk = generate_chunk();
+	
 	glfwSwapInterval(1);
 
 	glEnable(GL_DEPTH_TEST);
@@ -65,14 +66,14 @@ int main()
 		10, 11, 8
 	};
 
-	Camera camera;
 
+	Camera camera;
 
 	while (!glfwWindowShouldClose(window))
 	{
-		rotation += 0.1;
+		//rotation += 0.1;
 		glClearColor(0.07f, 0.13f, 0.17f, 0.5f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
 
         mat4 view;
         glm_mat4_identity(view);
@@ -84,28 +85,27 @@ int main()
 
 		handle_movement(&camera, window);
 
-		for (int i = 0; i < 16; i++){
-			glm_mat4_identity(blocks[i].model);
+		for (int i = 0; i < 256; i++){
+			glm_mat4_identity(chunk.blocks[i].model);
 
-			glm_rotate(blocks[i].model, glm_rad(0), (vec3){0.0f, 1.0f, 0.0f});
-			glm_translate(blocks[i].model, (vec3){(float)i, 0, 0.0f});
+			glm_rotate(chunk.blocks[i].model, glm_rad(0), (vec3){0.0f, 1.0f, 0.0f});
+			glm_translate(chunk.blocks[i].model, (vec3){chunk.blocks[i].x, chunk.blocks[i].y, chunk.blocks[i].z});
 
+			glUseProgram(chunk.blocks[i].shaderProgram);
 
-			glUseProgram(blocks[i].shaderProgram);
-
-
-			int modelLoc = glGetUniformLocation(blocks[i].shaderProgram, "model");
-			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, (const GLfloat *)blocks[i].model);
-			int viewLoc = glGetUniformLocation(blocks[i].shaderProgram, "view");
+			int modelLoc = glGetUniformLocation(chunk.blocks[i].shaderProgram, "model");
+			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, (const GLfloat *)chunk.blocks[i].model);
+			int viewLoc = glGetUniformLocation(chunk.blocks[i].shaderProgram, "view");
 			glUniformMatrix4fv(viewLoc, 1, GL_FALSE, (const GLfloat *)view);
-			int projLoc = glGetUniformLocation(blocks[i].shaderProgram, "proj");
+			int projLoc = glGetUniformLocation(chunk.blocks[i].shaderProgram, "proj");
 			glUniformMatrix4fv(projLoc, 1, GL_FALSE, (const GLfloat *)proj);
 
-		    glBindTexture(GL_TEXTURE_2D, blocks[i].texture);
+		    glBindTexture(GL_TEXTURE_2D, chunk.blocks[i].texture);
 			
-			glBindVertexArray(blocks[i].VAO);
+			glBindVertexArray(chunk.blocks[i].VAO);
 			glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(int), GL_UNSIGNED_INT, 0);
 		}
+
 
 
 		glfwSwapBuffers(window);
