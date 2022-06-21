@@ -24,8 +24,9 @@ Chunk generate_chunk(int start_x, int start_y, int start_z, BaseInfo basic_block
     for (int x = 0+start_x; x < 16+start_x; x++){
         for (int y = 0+start_y; y < 16+start_y; y++){
             for (int z = 0+start_z; z < 16+start_z; z++){
-                blocks[i] = create_buffers(basic_block_data, x*2, y*2, z*2);
-                i++;
+                    blocks[i] = create_buffers(basic_block_data, x*2, y*2, z*2);
+                    i++;
+
             }
         }
     }
