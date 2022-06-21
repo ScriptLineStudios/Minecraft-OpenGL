@@ -7,7 +7,7 @@ struct block {
 };
 
 typedef struct base_info{
-    GLuint shaderProgram, VAO, VBO, EBO;
+    GLuint shaderProgram, VAO, VBO, EBO, texture;
 } BaseInfo;
  
 typedef struct block Block;

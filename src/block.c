@@ -100,7 +100,6 @@ GLuint indices[] =
 
 struct block {
     GLuint VAO, VBO, EBO, shaderProgram, texture, x, y, z;
-
     mat4 * model;
 };
   
@@ -141,7 +140,7 @@ const char* fragmentShaderSource = GLSL(
 );
 
 typedef struct base_info{
-    GLuint shaderProgram, VAO, VBO, EBO;
+    GLuint shaderProgram, VAO, VBO, EBO, texture;
 } BaseInfo;
 
 BaseInfo initialize_block_info(){
@@ -190,18 +189,6 @@ BaseInfo initialize_block_info(){
     glBindVertexArray(0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    basic_info.shaderProgram = shaderProgram;
-    basic_info.VAO = VAO;
-    basic_info.VBO = VBO;
-    basic_info.EBO = EBO;
-
-    return basic_info;
-}
-
-
-Block create_buffers(BaseInfo basic_info, int _x, int _y, int _z){
-    Block block;
-
     int imgWidth, imgHeight, colors;
     unsigned char* bytes = stbi_load("/home/scriptline/Minecraft-OpenGL/src/grass.png", &imgWidth, &imgHeight, &colors, 0);
 
@@ -226,15 +213,29 @@ Block create_buffers(BaseInfo basic_info, int _x, int _y, int _z){
     stbi_image_free(bytes);
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    GLuint tex0Uni = glGetUniformLocation(basic_info.shaderProgram, "tex0");
-    glUseProgram(basic_info.shaderProgram);
+    GLuint tex0Uni = glGetUniformLocation(shaderProgram, "tex0");
+    glUseProgram(shaderProgram);
     glUniform1i(tex0Uni, 0);
+
+    basic_info.shaderProgram = shaderProgram;
+    basic_info.VAO = VAO;
+    basic_info.VBO = VBO;
+    basic_info.EBO = EBO;
+    basic_info.texture = texture;
+
+
+    return basic_info;
+}
+
+
+Block create_buffers(BaseInfo basic_info, int _x, int _y, int _z){
+    Block block;
 
     mat4 model;
     glm_mat4_identity(model);
 
     block.model = &model;
-    block.texture = texture;
+    block.texture = basic_info.texture;
 
     GLuint x = _x;
     GLuint y = _y;

@@ -2,7 +2,7 @@
 #define CHUNK
 
 struct chunk{
-    Block blocks[256];
+    Block blocks[4096];
 };
 
 typedef struct chunk Chunk;

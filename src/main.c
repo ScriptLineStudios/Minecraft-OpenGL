@@ -32,13 +32,18 @@ int main()
 	gladLoadGL();
 	glViewport(0, 0, 800, 800);
 
-	/*Block blocks[256];
-	for (int i = 0; i < 256; i++){
+	/*Block blocks[4096];
+	for (int i = 0; i < 4096; i++){
 		chunk.blocks[i] = create_buffers(i, 0, 0);
 	}*/
 
 	BaseInfo basic_block_data = initialize_block_info();
 	Chunk chunk = generate_chunk(basic_block_data);
+
+	/*for (int i = 0; i < 4096; i++){
+		printf("%d %d %d \n", chunk.blocks[i].x, chunk.blocks[i].y, chunk.blocks[i].z);
+	}*/
+
 	
 	glfwSwapInterval(1);
 
@@ -81,15 +86,16 @@ int main()
         glm_mat4_identity(proj);
 
     	glm_translate(view, (vec3){camera.x, camera.y, camera.z});
-        glm_perspective(glm_rad(45.0f), (float)(800/800), 0.1f, 100.0f, proj);
+        glm_perspective(glm_rad(45.0f), (float)(800/800), 0.1f, 1000.0f, proj);
 
 		handle_movement(&camera, window);
 
-		for (int i = 0; i < 256; i++){
+		for (int i = 0; i < 4096; i++){
 			glm_mat4_identity(chunk.blocks[i].model);
 
 			glm_rotate(chunk.blocks[i].model, glm_rad(0), (vec3){0.0f, 1.0f, 0.0f});
 			glm_translate(chunk.blocks[i].model, (vec3){chunk.blocks[i].x, chunk.blocks[i].y, chunk.blocks[i].z});
+			//printf("%d %d %d \n", chunk.blocks[i].x, chunk.blocks[i].y, chunk.blocks[i].z);
 
 			glUseProgram(basic_block_data.shaderProgram);
 
@@ -100,7 +106,7 @@ int main()
 			int projLoc = glGetUniformLocation(basic_block_data.shaderProgram, "proj");
 			glUniformMatrix4fv(projLoc, 1, GL_FALSE, (const GLfloat *)proj);
 
-		    glBindTexture(GL_TEXTURE_2D, chunk.blocks[i].texture);
+		    glBindTexture(GL_TEXTURE_2D, basic_block_data.texture);
 			
 			glBindVertexArray(basic_block_data.VAO);
 			glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(int), GL_UNSIGNED_INT, 0);
