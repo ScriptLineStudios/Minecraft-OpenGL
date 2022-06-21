@@ -223,7 +223,6 @@ BaseInfo initialize_block_info(){
     basic_info.EBO = EBO;
     basic_info.texture = texture;
 
-
     return basic_info;
 }
 
@@ -244,8 +243,6 @@ Block create_buffers(BaseInfo basic_info, int _x, int _y, int _z){
     block.x = x;
     block.y = y;
     block.z = z;
-
-	//printf("%d \n", block.x);
 
     return block;
 }

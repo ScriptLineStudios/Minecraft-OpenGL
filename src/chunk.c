@@ -16,23 +16,20 @@ struct chunk{
 
 typedef struct chunk Chunk;
 
-Chunk generate_chunk(BaseInfo basic_block_data){
+Chunk generate_chunk(int start_x, int start_y, int start_z, BaseInfo basic_block_data){
     Chunk chunk;
 	Block blocks[4096];
     int i = 0;
-    for (int x = 0; x < 16; x++){
-        for (int y = 0; y < 16; y++){
-            for (int z = 0; z < 16; z++){
+    for (int x = 0+start_x; x < 16+start_x; x++){
+        for (int y = 0+start_y; y < 16+start_y; y++){
+            for (int z = 0+start_z; z < 16+start_z; z++){
                 blocks[i] = create_buffers(basic_block_data, x*2, y*2, z*2);
                 i++;
             }
         }
     }
-    printf("%d \n", i);
     for (int j = 0; j < i; j++){
         chunk.blocks[j] = blocks[j];
-        //printf("(%d %d %d) (%d %d %d) \n", chunk.blocks[j].x, chunk.blocks[j].y, chunk.blocks[j].z,
-          //      blocks[j].x, blocks[j].y, blocks[j].z);
     }
     return chunk;
 

@@ -38,17 +38,24 @@ int main()
 	}*/
 
 	BaseInfo basic_block_data = initialize_block_info();
-	Chunk chunk = generate_chunk(basic_block_data);
+	Chunk chunks[8];
+	chunks[0] = generate_chunk(0, 0, 0, basic_block_data);
+	chunks[1] = generate_chunk(16, 0, 0, basic_block_data);
+	chunks[2] = generate_chunk(0, 0, 16, basic_block_data);
+	chunks[3] = generate_chunk(16, 0, 16, basic_block_data);
 
+	chunks[4] = generate_chunk(0, 0, 32, basic_block_data);
+	chunks[5] = generate_chunk(16, 0, 32, basic_block_data);
+	chunks[6] = generate_chunk(0, 0, 48, basic_block_data);
+	chunks[7] = generate_chunk(16, 0, 48, basic_block_data);
 	/*for (int i = 0; i < 4096; i++){
 		printf("%d %d %d \n", chunk.blocks[i].x, chunk.blocks[i].y, chunk.blocks[i].z);
-	}*/
+	}*/ 
 
 	
 	glfwSwapInterval(1);
 
 	glEnable(GL_DEPTH_TEST);
-
 
 
 	GLuint indices[] =
@@ -76,7 +83,7 @@ int main()
 
 	while (!glfwWindowShouldClose(window))
 	{
-		//rotation += 0.1;
+		//camera.rotation += 0.1;
 		glClearColor(0.43f, 0.69f, 1.0f, 0.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
 
@@ -86,31 +93,35 @@ int main()
         glm_mat4_identity(proj);
 
     	glm_translate(view, (vec3){camera.x, camera.y, camera.z});
-        glm_perspective(glm_rad(45.0f), (float)(800/800), 0.1f, 1000.0f, proj);
+		//glm_rotate_at(view, (vec3){0.0f, 1.0f, 0.0f}, camera.rotation, (vec3){0.0f, 1.0f, 0.0f});
+        glm_perspective(glm_rad(45), (float)(800/800), 0.1f, 100.0f, proj);
 
 		handle_movement(&camera, window);
 
-		for (int i = 0; i < 4096; i++){
-			glm_mat4_identity(chunk.blocks[i].model);
+		for (int j = 0; j < 8; j++){
+			for (int i = 0; i < 4096; i++){
+				glm_mat4_identity(chunks[j].blocks[i].model);
 
-			glm_rotate(chunk.blocks[i].model, glm_rad(0), (vec3){0.0f, 1.0f, 0.0f});
-			glm_translate(chunk.blocks[i].model, (vec3){chunk.blocks[i].x, chunk.blocks[i].y, chunk.blocks[i].z});
-			//printf("%d %d %d \n", chunk.blocks[i].x, chunk.blocks[i].y, chunk.blocks[i].z);
+				glm_rotate(chunks[j].blocks[i].model, glm_rad(0), (vec3){0.0f, 1.0f, 0.0f});
+				glm_translate(chunks[j].blocks[i].model, (vec3){chunks[j].blocks[i].x, chunks[j].blocks[i].y, chunks[j].blocks[i].z});
+				//printf("%d %d %d \n", chunk.blocks[i].x, chunk.blocks[i].y, chunk.blocks[i].z);
 
-			glUseProgram(basic_block_data.shaderProgram);
+				glUseProgram(basic_block_data.shaderProgram);
 
-			int modelLoc = glGetUniformLocation(basic_block_data.shaderProgram, "model");
-			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, (const GLfloat *)chunk.blocks[i].model);
-			int viewLoc = glGetUniformLocation(basic_block_data.shaderProgram, "view");
-			glUniformMatrix4fv(viewLoc, 1, GL_FALSE, (const GLfloat *)view);
-			int projLoc = glGetUniformLocation(basic_block_data.shaderProgram, "proj");
-			glUniformMatrix4fv(projLoc, 1, GL_FALSE, (const GLfloat *)proj);
+				int modelLoc = glGetUniformLocation(basic_block_data.shaderProgram, "model");
+				glUniformMatrix4fv(modelLoc, 1, GL_FALSE, (const GLfloat *)chunks[j].blocks[i].model);
+				int viewLoc = glGetUniformLocation(basic_block_data.shaderProgram, "view");
+				glUniformMatrix4fv(viewLoc, 1, GL_FALSE, (const GLfloat *)view);
+				int projLoc = glGetUniformLocation(basic_block_data.shaderProgram, "proj");
+				glUniformMatrix4fv(projLoc, 1, GL_FALSE, (const GLfloat *)proj);
 
-		    glBindTexture(GL_TEXTURE_2D, basic_block_data.texture);
-			
-			glBindVertexArray(basic_block_data.VAO);
-			glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(int), GL_UNSIGNED_INT, 0);
+				glBindTexture(GL_TEXTURE_2D, basic_block_data.texture);
+				
+				glBindVertexArray(basic_block_data.VAO);
+				glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(int), GL_UNSIGNED_INT, 0);
+			}
 		}
+
 
 
 

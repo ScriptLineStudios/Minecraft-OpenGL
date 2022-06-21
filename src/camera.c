@@ -4,9 +4,11 @@
 #include<cglm/mat4.h>
 #include<cglm/vec3.h>
 #include<cglm/clipspace/persp.h>
+#include<stdbool.h>
 
 struct camera {
-    float x, y, z; //hmm yes
+    float x, y, z; 
+    float rotation;
 };
 
 typedef struct camera Camera;
@@ -35,5 +37,12 @@ void handle_movement(Camera * camera, GLFWwindow* window){
     }
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS){
         camera->y -= 0.1f;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS){
+        camera->rotation += 0.1f;
+    }
+    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS){
+        camera->rotation -= 0.1f;
     }
 }
