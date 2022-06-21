@@ -3,6 +3,7 @@
 
 struct chunk{
     Block blocks[4096];
+    GLuint VAO;
 };
 
 typedef struct chunk Chunk;

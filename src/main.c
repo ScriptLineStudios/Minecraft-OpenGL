@@ -38,16 +38,14 @@ int main()
 	}*/
 
 	BaseInfo basic_block_data = initialize_block_info();
-	Chunk chunks[8];
-	chunks[0] = generate_chunk(0, 0, 0, basic_block_data);
-	chunks[1] = generate_chunk(16, 0, 0, basic_block_data);
-	chunks[2] = generate_chunk(0, 0, 16, basic_block_data);
-	chunks[3] = generate_chunk(16, 0, 16, basic_block_data);
+	Chunk chunks[1];
 
-	chunks[4] = generate_chunk(0, 0, 32, basic_block_data);
-	chunks[5] = generate_chunk(16, 0, 32, basic_block_data);
-	chunks[6] = generate_chunk(0, 0, 48, basic_block_data);
-	chunks[7] = generate_chunk(16, 0, 48, basic_block_data);
+
+	chunks[0] = generate_chunk(0, 0, 0, basic_block_data);  //Top Left
+
+
+
+	
 	/*for (int i = 0; i < 4096; i++){
 		printf("%d %d %d \n", chunk.blocks[i].x, chunk.blocks[i].y, chunk.blocks[i].z);
 	}*/ 
@@ -56,6 +54,8 @@ int main()
 	glfwSwapInterval(1);
 
 	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
+
 
 
 	GLuint indices[] =
@@ -80,12 +80,23 @@ int main()
 	};
 
 	Camera camera;
+	camera.y = -32.0f;
+	camera.z = -33.0f;
+	camera.x = -32.0f;
 
+	int z_offset = -32;
+
+
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	while (!glfwWindowShouldClose(window))
 	{
 		//camera.rotation += 0.1;
 		glClearColor(0.43f, 0.69f, 1.0f, 0.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
+
+		
+
 
         mat4 view;
         glm_mat4_identity(view);
@@ -98,13 +109,12 @@ int main()
 
 		handle_movement(&camera, window);
 
-		for (int j = 0; j < 8; j++){
+		for (int j = 0; j < 1; j++){
 			for (int i = 0; i < 4096; i++){
 				glm_mat4_identity(chunks[j].blocks[i].model);
 
 				glm_rotate(chunks[j].blocks[i].model, glm_rad(0), (vec3){0.0f, 1.0f, 0.0f});
 				glm_translate(chunks[j].blocks[i].model, (vec3){chunks[j].blocks[i].x, chunks[j].blocks[i].y, chunks[j].blocks[i].z});
-				//printf("%d %d %d \n", chunk.blocks[i].x, chunk.blocks[i].y, chunk.blocks[i].z);
 
 				glUseProgram(basic_block_data.shaderProgram);
 
@@ -116,14 +126,11 @@ int main()
 				glUniformMatrix4fv(projLoc, 1, GL_FALSE, (const GLfloat *)proj);
 
 				glBindTexture(GL_TEXTURE_2D, basic_block_data.texture);
-				
+
 				glBindVertexArray(basic_block_data.VAO);
 				glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(int), GL_UNSIGNED_INT, 0);
 			}
 		}
-
-
-
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
