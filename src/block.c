@@ -5,15 +5,53 @@
 #include<cglm/vec3.h>
 #include<cglm/clipspace/persp.h>
 #include<stb/stb.h>
+#include<time.h>
 
-GLfloat vertices[] =
-{
+GLfloat back[] = {
+    -0.5, -0.5,  -0.5,   1.0f, 0.0f, 0.0f,    0.0f, 0.0f, // bottom left back (0)
+    0.5, -0.5,  -0.5,   0.0f, 1.0f, 0.0f,    0.0f, 1.0f, // bottom right back(1)
+    0.5,  0.5,  -0.5,   0.0f, 0.0f, 0.0f,    1.0f, 1.0f, // top right back(2)
+   -0.5,  0.5,  -0.5,   1.0f, 0.0f, 0.0f,    1.0f, 0.0f, //top left back(3)
+};
+GLfloat front[] = {
+    -0.5, -0.5,  0.5,   1.0f, 0.0f, 0.0f,    0.0f, 0.0f, // bottom left front(4)
+    0.5, -0.5,  0.5,   0.0f, 1.0f, 0.0f,    0.0f, 1.0f, // bottom right front(5)
+    0.5,  0.5,  0.5,   0.0f, 0.0f, 0.0f,    1.0f, 1.0f, // top right front(6)
+   -0.5,  0.5,  0.5,   1.0f, 0.0f, 0.0f,    1.0f, 0.0f, //top left front(7)
+};
+GLfloat top[] = {
+   -0.5,  0.5, -0.5,   1.0f, 0.0f, 0.0f,    0.0f, 0.0f, // top left back(8)
+    0.5,  0.5, -0.5,   0.0f, 0.0f, 0.0f,    0.0f, 1.0f, // top right back(9)
+    0.5,  0.5,  0.5,   0.0f, 0.0f, 0.0f,    1.0f, 1.0f, // top right front (10)
+   -0.5,  0.5,  0.5,   1.0f, 0.0f, 0.0f,    1.0f, 0.0f, //top left front(11)
+};
+GLfloat bottom[] = {
+   -0.5, -0.5,  -0.5,   1.0f, 0.0f, 0.0f,    0.0f, 0.0f, // bottom left back(12)
+    0.5, -0.5,  -0.5,   0.0f, 1.0f, 0.0f,    0.0f, 1.0f, // bottom right back(13)
+    0.5, -0.5,  0.5,   0.0f, 1.0f, 0.0f,    1.0f, 1.0f, // bottom right front (14)
+   -0.5, -0.5,  0.5,   1.0f, 0.0f, 0.0f,    1.0f, 0.0f, //bottom left front(15)
+};
+GLfloat left[] = {
+   -0.5,  0.5, -0.5,   1.0f, 0.0f, 0.0f,     1.0f, 0.0f, // top left back(16)
+   -0.5,  0.5,  0.5,   1.0f, 0.0f, 0.0f,     1.0f, 1.0f, // top left front(17)
+   -0.5, -0.5,  0.5,   1.0f, 0.0f, 0.0f,     0.0f, 1.0f, // bottom left front(18)
+   -0.5, -0.5,  -0.5,  1.0f, 0.0f, 0.0f,     0.0f, 0.0f, // bottom left back (19)
+};
+GLfloat right[] = {
+    0.5,  0.5, -0.5,   0.0f, 0.0f, 0.0f,    1.0f, 0.0f, // top right back(20)
+    0.5,  0.5,  0.5,   0.0f, 0.0f, 0.0f,    1.0f, 1.0f, // top right front(21)
+    0.5, -0.5,  0.5,   0.0f, 1.0f, 0.0f,    0.0f, 1.0f, // bottom right front(22)
+    0.5, -0.5,  -0.5,   0.0f, 1.0f, 0.0f,    0.0f, 0.0f, // bottom right back(23)
+};
+
+
+GLfloat vertices[192] = {
    -0.5, -0.5,  -0.5,   1.0f, 0.0f, 0.0f,    0.0f, 0.0f, // bottom left back (0)
     0.5, -0.5,  -0.5,   0.0f, 1.0f, 0.0f,    0.0f, 1.0f, // bottom right back(1)
     0.5,  0.5,  -0.5,   0.0f, 0.0f, 0.0f,    1.0f, 1.0f, // top right back(2)
    -0.5,  0.5,  -0.5,   1.0f, 0.0f, 0.0f,    1.0f, 0.0f, //top left back(3)
 
-   -0.5, -0.5,  0.5,   1.0f, 0.0f, 0.0f,    0.0f, 0.0f, // bottom left front(4)
+    -0.5, -0.5,  0.5,   1.0f, 0.0f, 0.0f,    0.0f, 0.0f, // bottom left front(4)
     0.5, -0.5,  0.5,   0.0f, 1.0f, 0.0f,    0.0f, 1.0f, // bottom right front(5)
     0.5,  0.5,  0.5,   0.0f, 0.0f, 0.0f,    1.0f, 1.0f, // top right front(6)
    -0.5,  0.5,  0.5,   1.0f, 0.0f, 0.0f,    1.0f, 0.0f, //top left front(7)
@@ -102,11 +140,14 @@ const char* fragmentShaderSource = GLSL(
     }
 );
 
+typedef struct base_info{
+    GLuint shaderProgram, VAO, VBO, EBO;
+} BaseInfo;
 
-Block create_buffers(int _x, int _y, int _z){
-    Block block;
+BaseInfo initialize_block_info(){
+    BaseInfo basic_info;
 
-	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
 	glCompileShader(vertexShader);
 
@@ -148,7 +189,19 @@ Block create_buffers(int _x, int _y, int _z){
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	stbi_set_flip_vertically_on_load(false);
+
+    basic_info.shaderProgram = shaderProgram;
+    basic_info.VAO = VAO;
+    basic_info.VBO = VBO;
+    basic_info.EBO = EBO;
+
+    return basic_info;
+}
+
+
+Block create_buffers(BaseInfo basic_info, int _x, int _y, int _z){
+    Block block;
+
     int imgWidth, imgHeight, colors;
     unsigned char* bytes = stbi_load("/home/scriptline/Minecraft-OpenGL/src/grass.png", &imgWidth, &imgHeight, &colors, 0);
 
@@ -173,26 +226,19 @@ Block create_buffers(int _x, int _y, int _z){
     stbi_image_free(bytes);
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    GLuint tex0Uni = glGetUniformLocation(shaderProgram, "tex0");
-    glUseProgram(shaderProgram);
+    GLuint tex0Uni = glGetUniformLocation(basic_info.shaderProgram, "tex0");
+    glUseProgram(basic_info.shaderProgram);
     glUniform1i(tex0Uni, 0);
 
     mat4 model;
     glm_mat4_identity(model);
 
     block.model = &model;
-    block.VAO = VAO;
-    block.VBO = VBO;
-    block.EBO = EBO;
-    block.shaderProgram = shaderProgram;
     block.texture = texture;
 
     GLuint x = _x;
     GLuint y = _y;
     GLuint z = _z;
-
-
-
 
     block.x = x;
     block.y = y;

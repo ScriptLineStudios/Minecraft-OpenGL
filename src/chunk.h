@@ -7,6 +7,6 @@ struct chunk{
 
 typedef struct chunk Chunk;
 
-Chunk generate_chunk();
+Chunk generate_chunk(BaseInfo basic_block_data);
 
 #endif

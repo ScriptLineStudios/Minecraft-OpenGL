@@ -15,14 +15,14 @@ struct chunk{
 
 typedef struct chunk Chunk;
 
-Chunk generate_chunk(){
+Chunk generate_chunk(BaseInfo basic_block_data){
     Chunk chunk;
 	Block blocks[256];
     int i;
     for (int x = 0; x < 16; x++){
         for (int y = 0; y < 16; y++){
             for (int z = 0; z < 2; z++){
-                blocks[i] = create_buffers(x*2, y*2, z*2);
+                blocks[i] = create_buffers(basic_block_data, x*2, y*2, z*2);
                 i++;
             }
         }

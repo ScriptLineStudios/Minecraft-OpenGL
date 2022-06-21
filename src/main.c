@@ -37,7 +37,8 @@ int main()
 		chunk.blocks[i] = create_buffers(i, 0, 0);
 	}*/
 
-	Chunk chunk = generate_chunk();
+	BaseInfo basic_block_data = initialize_block_info();
+	Chunk chunk = generate_chunk(basic_block_data);
 	
 	glfwSwapInterval(1);
 
@@ -66,13 +67,12 @@ int main()
 		10, 11, 8
 	};
 
-
 	Camera camera;
 
 	while (!glfwWindowShouldClose(window))
 	{
 		//rotation += 0.1;
-		glClearColor(0.07f, 0.13f, 0.17f, 0.5f);
+		glClearColor(0.43f, 0.69f, 1.0f, 0.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
 
         mat4 view;
@@ -91,18 +91,18 @@ int main()
 			glm_rotate(chunk.blocks[i].model, glm_rad(0), (vec3){0.0f, 1.0f, 0.0f});
 			glm_translate(chunk.blocks[i].model, (vec3){chunk.blocks[i].x, chunk.blocks[i].y, chunk.blocks[i].z});
 
-			glUseProgram(chunk.blocks[i].shaderProgram);
+			glUseProgram(basic_block_data.shaderProgram);
 
-			int modelLoc = glGetUniformLocation(chunk.blocks[i].shaderProgram, "model");
+			int modelLoc = glGetUniformLocation(basic_block_data.shaderProgram, "model");
 			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, (const GLfloat *)chunk.blocks[i].model);
-			int viewLoc = glGetUniformLocation(chunk.blocks[i].shaderProgram, "view");
+			int viewLoc = glGetUniformLocation(basic_block_data.shaderProgram, "view");
 			glUniformMatrix4fv(viewLoc, 1, GL_FALSE, (const GLfloat *)view);
-			int projLoc = glGetUniformLocation(chunk.blocks[i].shaderProgram, "proj");
+			int projLoc = glGetUniformLocation(basic_block_data.shaderProgram, "proj");
 			glUniformMatrix4fv(projLoc, 1, GL_FALSE, (const GLfloat *)proj);
 
 		    glBindTexture(GL_TEXTURE_2D, chunk.blocks[i].texture);
 			
-			glBindVertexArray(chunk.blocks[i].VAO);
+			glBindVertexArray(basic_block_data.VAO);
 			glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(int), GL_UNSIGNED_INT, 0);
 		}
 
