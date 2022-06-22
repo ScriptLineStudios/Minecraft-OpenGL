@@ -5,9 +5,12 @@ struct block {
     GLuint VAO, VBO, EBO, shaderProgram, texture, x, y, z;
     GLuint indices;
     mat4 model;
-    GLuint offset1;
-    GLuint offset2;
-    GLuint offset3;
+    bool shouldRenderLeft;
+    bool shouldRenderRight;
+    bool shouldRenderFront;
+    bool shouldRenderBack;
+    bool shouldRenderUp;
+    bool shouldRenderDown;
 };
 
 typedef struct base_info{

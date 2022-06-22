@@ -102,9 +102,12 @@ struct block {
     GLuint VAO, VBO, EBO, shaderProgram, texture, x, y, z;
     GLuint * indices;
     mat4 * model;
-    GLuint offset1;
-    GLuint offset2;
-    GLuint offset3;
+    bool shouldRenderLeft;
+    bool shouldRenderRight;
+    bool shouldRenderFront;
+    bool shouldRenderBack;
+    bool shouldRenderUp;
+    bool shouldRenderDown;
 };
   
 typedef struct block Block;
@@ -250,42 +253,5 @@ Block create_buffers(BaseInfo basic_info, int _x, int _y, int _z){
     block.z = z;
 
     block.indices = indices;
-
-    GLuint o1 = 0;
-    GLuint o2 = 6;
-    GLuint o3 = 12;
-
-    block.offset1 = o1;
-    block.offset2 = o2;
-    block.offset3 = o3;
-
-    if (_x == 0){
-        //only render left
-        if (_z == 0){
-        //render back and left
-        }
-        if (_z == 15){
-            //render front and left
-        }
-    }
-
-
-    if (_x == 15){
-        //only render right
-        if (_z == 15){
-            //render back and right
-        }
-        if (_z == 0){
-            //render front and right
-       }
-    }
-
-
-    if (_y == 0){
-        //render bottom
-
-    }
-
-
     return block;
 }

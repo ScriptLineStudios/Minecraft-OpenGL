@@ -138,12 +138,24 @@ int main()
 				glDrawRangeElements(GL_TRIANGLES, 18, 24, 6, GL_UNSIGNED_INT, (void*)(18*sizeof(unsigned int))); //LEFT
 				glDrawRangeElements(GL_TRIANGLES, 24, 30, 6, GL_UNSIGNED_INT, (void*)(24*sizeof(unsigned int))); //BOTTOM
 				glDrawRangeElements(GL_TRIANGLES, 30, 36, 6, GL_UNSIGNED_INT, (void*)(30*sizeof(unsigned int))); //TOP*/
-				GLuint data[3] = {chunks[j].blocks[i].offset1, chunks[j].blocks[i].offset2, chunks[j].blocks[i].offset3};
-				for (int o = 0; o < 3; o++){
-					if (data[o] != -1){
-						glDrawRangeElements(GL_TRIANGLES, data[o], data[o]+6
-								,6, GL_UNSIGNED_INT, (void*)(data[o]*sizeof(unsigned int)));
-					}
+
+				if (chunks[j].blocks[i].shouldRenderFront){
+					glDrawRangeElements(GL_TRIANGLES, 0, 6, 6, GL_UNSIGNED_INT, (void*)(0*sizeof(unsigned int))); //FRONT 
+				}
+				if (chunks[j].blocks[i].shouldRenderRight){
+					glDrawRangeElements(GL_TRIANGLES, 6, 12, 6, GL_UNSIGNED_INT, (void*)(6*sizeof(unsigned int))); //RIGHT
+				}
+				if (chunks[j].blocks[i].shouldRenderBack){
+					glDrawRangeElements(GL_TRIANGLES, 12, 18, 6, GL_UNSIGNED_INT, (void*)(12*sizeof(unsigned int))); //BACK
+				}
+				if (chunks[j].blocks[i].shouldRenderLeft){
+					glDrawRangeElements(GL_TRIANGLES, 18, 24, 6, GL_UNSIGNED_INT, (void*)(18*sizeof(unsigned int))); //LEFT
+				}
+				if (chunks[j].blocks[i].shouldRenderDown){
+					glDrawRangeElements(GL_TRIANGLES, 24, 30, 6, GL_UNSIGNED_INT, (void*)(24*sizeof(unsigned int))); //BOTTOM
+				}
+				if (chunks[j].blocks[i].shouldRenderUp){
+					glDrawRangeElements(GL_TRIANGLES, 30, 36, 6, GL_UNSIGNED_INT, (void*)(30*sizeof(unsigned int))); //TOP
 				}
 
 

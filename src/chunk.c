@@ -32,8 +32,52 @@ Chunk generate_chunk(int start_x, int start_y, int start_z, BaseInfo basic_block
     }
     for (int j = 0; j < i; j++){
         chunk.blocks[j] = blocks[j];
+        // Get the blocks x: subtract one for block on the left add one for block on the left
+        // Get the blocks y: subtract one for block on the top add one for block on the bottom
+        // Get the blocks z: subtract one for block in front add one for block in the back
     }
 
+    for (int f = 0; f < i; f++){ 
+        GLuint neighbor_x = chunk.blocks[f].x - 2;
+        GLuint neighbor_y = chunk.blocks[f].y + 2;
+        GLuint neighbor_z = chunk.blocks[f].z - 2;
+
+        //Before running, assume all faces must be drawn
+        chunk.blocks[f].shouldRenderLeft = true;
+        chunk.blocks[f].shouldRenderRight = true;
+        chunk.blocks[f].shouldRenderUp = true;
+        chunk.blocks[f].shouldRenderDown = true;
+        chunk.blocks[f].shouldRenderBack = true;
+        chunk.blocks[f].shouldRenderFront = true;
+
+        for (int c = 0; c < i; c++){
+            if (chunk.blocks[c].x == neighbor_x){ //If the neighbouting x block exists (dont render the face!)
+                chunk.blocks[f].shouldRenderLeft = false;
+            }   
+            if (chunk.blocks[c].y == neighbor_y){ //If the neighbouting y block exists (dont render the face!)
+                chunk.blocks[f].shouldRenderUp = false;
+            }  
+            if (chunk.blocks[c].z == neighbor_z){ //If the neighbouting z block exists (dont render the face!)
+                chunk.blocks[f].shouldRenderFront = false;
+            }  
+        }
+
+        GLuint _neighbor_x = chunk.blocks[f].x + 2;
+        GLuint _neighbor_y = chunk.blocks[f].y - 2;
+        GLuint _neighbor_z = chunk.blocks[f].z + 2;
+
+        for (int c = 0; c < i; c++){
+            if (chunk.blocks[c].x == _neighbor_x){ //If the neighbouting x block exists (dont render the face!)
+                chunk.blocks[f].shouldRenderRight = false;
+            }   
+            if (chunk.blocks[c].y == _neighbor_y){ //If the neighbouting y block exists (dont render the face!)
+                chunk.blocks[f].shouldRenderDown = false;
+            }  
+            if (chunk.blocks[c].z == _neighbor_z){ //If the neighbouting z block exists (dont render the face!)
+                chunk.blocks[f].shouldRenderBack = false;
+            }  
+        }
+    }
 
     return chunk;
 }
