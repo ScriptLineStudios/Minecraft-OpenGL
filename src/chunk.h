@@ -2,8 +2,7 @@
 #define CHUNK
 
 struct chunk{
-    Block blocks[4096];
-    GLuint VAO;
+	Block blocks[10];
 };
 
 typedef struct chunk Chunk;

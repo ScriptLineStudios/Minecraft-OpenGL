@@ -1,3 +1,4 @@
+
 #include<glad/glad.h>
 #include<GLFW/glfw3.h>
 #include<cglm/cglm.h>
@@ -9,73 +10,84 @@
 #include<stdlib.h>
 
 #include "block.h"
+#include "perlin.h"
 
 struct chunk{
-    Block blocks[4096];
-    GLuint VAO;
+    Block blocks[10];
+
 };
 
 typedef struct chunk Chunk;
 
 Chunk generate_chunk(int start_x, int start_y, int start_z, BaseInfo basic_block_data){
     Chunk chunk;
-	Block blocks[4096];
-    int i = 0;
-    for (int x = 0+start_x; x < 16+start_x; x++){
-        for (int y = 0+start_y; y < 16+start_y; y++){
-            for (int z = 0+start_z; z < 16+start_z; z++){
-                    blocks[i] = create_buffers(basic_block_data, x*2, y*2, z*2);
-                    i++;
+    chunk.blocks[0] = create_buffers(basic_block_data, 2, 2, 2);
+    chunk.blocks[0].type = 1;
+    chunk.blocks[1] = create_buffers(basic_block_data, 4, 2, 2);
+    chunk.blocks[1].type = 1;
+    chunk.blocks[2] = create_buffers(basic_block_data, 6, 2, 2);
+    chunk.blocks[2].type = 1;
+    
+    chunk.blocks[3] = create_buffers(basic_block_data, 8, 2, 2);
+    chunk.blocks[3].type = 1;
+    
+    chunk.blocks[4] = create_buffers(basic_block_data, 10, 2, 2);
+    chunk.blocks[4].type = 1;
+    
+    chunk.blocks[5] = create_buffers(basic_block_data, 12, 2, 2);
+    chunk.blocks[5].type = 1;
+    
+    chunk.blocks[6] = create_buffers(basic_block_data, 14, 2, 2);
+    chunk.blocks[6].type = 0;
+    
+    chunk.blocks[7] = create_buffers(basic_block_data, 16, 2, 2);
+    chunk.blocks[7].type = 1;
 
-            }
-        }
-    }
-    for (int j = 0; j < i; j++){
-        chunk.blocks[j] = blocks[j];
-        // Get the blocks x: subtract one for block on the left add one for block on the left
-        // Get the blocks y: subtract one for block on the top add one for block on the bottom
-        // Get the blocks z: subtract one for block in front add one for block in the back
-    }
+    chunk.blocks[8] = create_buffers(basic_block_data, 18, 2, 2);
+    chunk.blocks[8].type = 1;
 
+    chunk.blocks[9] = create_buffers(basic_block_data, 20, 2, 2);
+    chunk.blocks[9].type = 1;
+
+    int i = 10;
     for (int f = 0; f < i; f++){ 
-        GLuint neighbor_x = chunk.blocks[f].x - 2;
-        GLuint neighbor_y = chunk.blocks[f].y + 2;
-        GLuint neighbor_z = chunk.blocks[f].z - 2;
+        if (chunk.blocks[f].type != 0){
+            chunk.blocks[f].shouldRenderLeft = true;
+            chunk.blocks[f].shouldRenderRight = true;
+            chunk.blocks[f].shouldRenderUp = true;
+            chunk.blocks[f].shouldRenderDown = true;
+            chunk.blocks[f].shouldRenderBack = true;
+            chunk.blocks[f].shouldRenderFront = true;
+        
 
-        //Before running, assume all faces must be drawn
-        chunk.blocks[f].shouldRenderLeft = true;
-        chunk.blocks[f].shouldRenderRight = true;
-        chunk.blocks[f].shouldRenderUp = true;
-        chunk.blocks[f].shouldRenderDown = true;
-        chunk.blocks[f].shouldRenderBack = true;
-        chunk.blocks[f].shouldRenderFront = true;
+            for (int c = 0; c < i; c++){
+                if (chunk.blocks[c].x == chunk.blocks[f].x - 2) chunk.blocks[f].shouldRenderLeft = false;
+                if (chunk.blocks[c].y == chunk.blocks[f].y + 2) chunk.blocks[f].shouldRenderUp = false;
+                if (chunk.blocks[c].z == chunk.blocks[f].z - 2) chunk.blocks[f].shouldRenderFront = false;
 
-        for (int c = 0; c < i; c++){
-            if (chunk.blocks[c].x == neighbor_x){ //If the neighbouting x block exists (dont render the face!)
-                chunk.blocks[f].shouldRenderLeft = false;
-            }   
-            if (chunk.blocks[c].y == neighbor_y){ //If the neighbouting y block exists (dont render the face!)
-                chunk.blocks[f].shouldRenderUp = false;
-            }  
-            if (chunk.blocks[c].z == neighbor_z){ //If the neighbouting z block exists (dont render the face!)
-                chunk.blocks[f].shouldRenderFront = false;
-            }  
+                if (chunk.blocks[c].x == chunk.blocks[f].x + 2) chunk.blocks[f].shouldRenderRight = false;
+                if (chunk.blocks[c].y == chunk.blocks[f].y - 2) chunk.blocks[f].shouldRenderDown = false;
+                if (chunk.blocks[c].z == chunk.blocks[f].z + 2) chunk.blocks[f].shouldRenderBack = false;
+            }
+
         }
+        else{
+            chunk.blocks[f].shouldRenderLeft = false;
+            chunk.blocks[f].shouldRenderRight = false;
+            chunk.blocks[f].shouldRenderUp = false;
+            chunk.blocks[f].shouldRenderDown = false;
+            chunk.blocks[f].shouldRenderBack = false;
+            chunk.blocks[f].shouldRenderFront = false;
 
-        GLuint _neighbor_x = chunk.blocks[f].x + 2;
-        GLuint _neighbor_y = chunk.blocks[f].y - 2;
-        GLuint _neighbor_z = chunk.blocks[f].z + 2;
+            for (int c = 0; c < i; c++){
+                if (chunk.blocks[c].x == chunk.blocks[f].x - 2) chunk.blocks[f].shouldRenderLeft = true;
+                if (chunk.blocks[c].y == chunk.blocks[f].y + 2) chunk.blocks[f].shouldRenderUp = true;
+                if (chunk.blocks[c].z == chunk.blocks[f].z - 2) chunk.blocks[f].shouldRenderFront = true;
 
-        for (int c = 0; c < i; c++){
-            if (chunk.blocks[c].x == _neighbor_x){ //If the neighbouting x block exists (dont render the face!)
-                chunk.blocks[f].shouldRenderRight = false;
-            }   
-            if (chunk.blocks[c].y == _neighbor_y){ //If the neighbouting y block exists (dont render the face!)
-                chunk.blocks[f].shouldRenderDown = false;
-            }  
-            if (chunk.blocks[c].z == _neighbor_z){ //If the neighbouting z block exists (dont render the face!)
-                chunk.blocks[f].shouldRenderBack = false;
-            }  
+                if (chunk.blocks[c].x == chunk.blocks[f].x + 2) chunk.blocks[f].shouldRenderRight = true;
+                if (chunk.blocks[c].y == chunk.blocks[f].y - 2) chunk.blocks[f].shouldRenderDown = true;
+                if (chunk.blocks[c].z == chunk.blocks[f].z + 2) chunk.blocks[f].shouldRenderBack = true;
+            }
         }
     }
 

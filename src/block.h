@@ -11,6 +11,8 @@ struct block {
     bool shouldRenderBack;
     bool shouldRenderUp;
     bool shouldRenderDown;
+    int type;
+    int position;
 };
 
 typedef struct base_info{

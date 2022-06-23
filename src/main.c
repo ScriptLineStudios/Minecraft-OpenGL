@@ -21,7 +21,7 @@ int main()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	GLFWwindow* window = glfwCreateWindow(800, 800, "YoutubeOpenGL", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(800, 800, "Minecraft 100% legitimate", NULL, NULL);
 	if (window == NULL)
 	{
 		glfwTerminate();
@@ -32,25 +32,16 @@ int main()
 	gladLoadGL();
 	glViewport(0, 0, 800, 800);
 
-	/*Block blocks[4096];
-	for (int i = 0; i < 4096; i++){
-		chunk.blocks[i] = create_buffers(i, 0, 0);
-	}*/
+
 
 	BaseInfo basic_block_data = initialize_block_info();
 	Chunk chunks[1];
-
 
 	chunks[0] = generate_chunk(0, 0, 0, basic_block_data);  //Top Left
 
 
 
-	
-	/*for (int i = 0; i < 4096; i++){
-		printf("%d %d %d \n", chunk.blocks[i].x, chunk.blocks[i].y, chunk.blocks[i].z);
-	}*/ 
-
-	
+	  
 	glfwSwapInterval(1);
 
 	glEnable(GL_DEPTH_TEST);
@@ -95,7 +86,12 @@ int main()
 		glClearColor(0.43f, 0.69f, 1.0f, 0.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
 
-		
+		//printf("%d \n", (int)camera.z);
+
+		/*if ((int)camera.z % 16 == 0){
+			chunks[2] = generate_chunk(0, 0, z_offset, basic_block_data);  //Top Left
+			chunks[3] = generate_chunk(16, 0, z_offset, basic_block_data);  //Top Left
+		}*/
 
 
         mat4 view;
@@ -110,7 +106,7 @@ int main()
 		handle_movement(&camera, window);
 
 		for (int j = 0; j < 1; j++){
-			for (int i = 0; i < 4096; i++){
+			for (int i = 0; i < 10; i++){
 				glm_mat4_identity(chunks[j].blocks[i].model);
 
 				glm_rotate(chunks[j].blocks[i].model, glm_rad(0), (vec3){0.0f, 1.0f, 0.0f});
@@ -125,6 +121,12 @@ int main()
 				int projLoc = glGetUniformLocation(basic_block_data.shaderProgram, "proj");
 				glUniformMatrix4fv(projLoc, 1, GL_FALSE, (const GLfloat *)proj);
 
+
+				//chunks[0] = generate_chunk(0, 0, 0, basic_block_data);  //Top Left
+				//chunks[1] = generate_chunk(16, 0, 0, basic_block_data);  //Top Left
+
+				//chunks[2] = generate_chunk(0, 0, 16, basic_block_data);  //Top Left
+				//chunks[3] = generate_chunk(16, 0, 16, basic_block_data);  //Top Left
 
 
 				glBindTexture(GL_TEXTURE_2D, basic_block_data.texture);
@@ -157,14 +159,8 @@ int main()
 				if (chunks[j].blocks[i].shouldRenderUp){
 					glDrawRangeElements(GL_TRIANGLES, 30, 36, 6, GL_UNSIGNED_INT, (void*)(30*sizeof(unsigned int))); //TOP
 				}
-
-
-
-
-
-
 			}
-		}
+		} 
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
