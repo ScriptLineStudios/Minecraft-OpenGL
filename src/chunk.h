@@ -2,11 +2,11 @@
 #define CHUNK
 
 struct chunk{
-	Block blocks[10];
+	Block blocks[4096];
 };
 
 typedef struct chunk Chunk;
 
-Chunk generate_chunk(int start_x, int start_y, int start_z, BaseInfo basic_block_data);
+Chunk generate_chunk(int start_x, int start_y, int start_z, BaseInfo basicBlockData);
 
 #endif

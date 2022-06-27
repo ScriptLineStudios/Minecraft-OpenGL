@@ -1,4 +1,3 @@
-
 #include<glad/glad.h>
 #include<GLFW/glfw3.h>
 #include<cglm/cglm.h>
@@ -13,83 +12,108 @@
 #include "perlin.h"
 
 struct chunk{
-    Block blocks[10];
-
+    Block blocks[4096];
 };
 
 typedef struct chunk Chunk;
 
+Block * GetBlockAt(Chunk * chunk, int x, int y, int z)
+{
+    int i;
+    for (i = 0; i < 4096; i ++)
+    {
+        if (chunk->blocks[i].x == x && chunk->blocks[i].y == y && chunk->blocks[i].z == z)
+        {
+            return &chunk->blocks[i];
+        }
+    }
+    
+    return NULL;
+}
+
+Block * GetAllNeighbours(Chunk * chunk, Block * block)
+{
+    Block * neighbours = malloc(sizeof(Block) * 6);
+    for (int i = 0; i < 4096; i++)
+    {
+        Block chunk_block = chunk->blocks[i];
+        //left
+        if (chunk_block.x == block->x - 2 
+            && chunk_block.y == block->y 
+                && chunk_block.z == block->z) neighbours[0] = chunk_block;
+        //right
+        if (chunk_block.x == block->x + 2 
+            && chunk_block.y == block->y 
+                && chunk_block.z == block->z) neighbours[1] = chunk_block;
+        //up
+        if (chunk_block.x == block->x 
+            && chunk_block.y == block->y + 2
+                && chunk_block.z == block->z) neighbours[2] = chunk_block;
+        //down
+        if (chunk_block.x == block->x 
+            && chunk_block.y == block->y - 2
+                && chunk_block.z == block->z) neighbours[3] = chunk_block;
+        //front
+        if (chunk_block.x == block->x 
+            && chunk_block.y == block->y
+                && chunk_block.z == block->z - 2) neighbours[4] = chunk_block;
+        //back
+        if (chunk_block.x == block->x 
+            && chunk_block.y == block->y
+                && chunk_block.z == block->z + 2) neighbours[5] = chunk_block;
+    }
+    return neighbours;
+}
+
 Chunk generate_chunk(int start_x, int start_y, int start_z, BaseInfo basic_block_data){
     Chunk chunk;
-    chunk.blocks[0] = create_buffers(basic_block_data, 2, 2, 2);
-    chunk.blocks[0].type = 1;
-    chunk.blocks[1] = create_buffers(basic_block_data, 4, 2, 2);
-    chunk.blocks[1].type = 1;
-    chunk.blocks[2] = create_buffers(basic_block_data, 6, 2, 2);
-    chunk.blocks[2].type = 1;
-    
-    chunk.blocks[3] = create_buffers(basic_block_data, 8, 2, 2);
-    chunk.blocks[3].type = 1;
-    
-    chunk.blocks[4] = create_buffers(basic_block_data, 10, 2, 2);
-    chunk.blocks[4].type = 1;
-    
-    chunk.blocks[5] = create_buffers(basic_block_data, 12, 2, 2);
-    chunk.blocks[5].type = 1;
-    
-    chunk.blocks[6] = create_buffers(basic_block_data, 14, 2, 2);
-    chunk.blocks[6].type = 0;
-    
-    chunk.blocks[7] = create_buffers(basic_block_data, 16, 2, 2);
-    chunk.blocks[7].type = 1;
-
-    chunk.blocks[8] = create_buffers(basic_block_data, 18, 2, 2);
-    chunk.blocks[8].type = 1;
-
-    chunk.blocks[9] = create_buffers(basic_block_data, 20, 2, 2);
-    chunk.blocks[9].type = 1;
-
-    int i = 10;
-    for (int f = 0; f < i; f++){ 
-        if (chunk.blocks[f].type != 0){
-            chunk.blocks[f].shouldRenderLeft = true;
-            chunk.blocks[f].shouldRenderRight = true;
-            chunk.blocks[f].shouldRenderUp = true;
-            chunk.blocks[f].shouldRenderDown = true;
-            chunk.blocks[f].shouldRenderBack = true;
-            chunk.blocks[f].shouldRenderFront = true;
-        
-
-            for (int c = 0; c < i; c++){
-                if (chunk.blocks[c].x == chunk.blocks[f].x - 2) chunk.blocks[f].shouldRenderLeft = false;
-                if (chunk.blocks[c].y == chunk.blocks[f].y + 2) chunk.blocks[f].shouldRenderUp = false;
-                if (chunk.blocks[c].z == chunk.blocks[f].z - 2) chunk.blocks[f].shouldRenderFront = false;
-
-                if (chunk.blocks[c].x == chunk.blocks[f].x + 2) chunk.blocks[f].shouldRenderRight = false;
-                if (chunk.blocks[c].y == chunk.blocks[f].y - 2) chunk.blocks[f].shouldRenderDown = false;
-                if (chunk.blocks[c].z == chunk.blocks[f].z + 2) chunk.blocks[f].shouldRenderBack = false;
-            }
-
-        }
-        else{
-            chunk.blocks[f].shouldRenderLeft = false;
-            chunk.blocks[f].shouldRenderRight = false;
-            chunk.blocks[f].shouldRenderUp = false;
-            chunk.blocks[f].shouldRenderDown = false;
-            chunk.blocks[f].shouldRenderBack = false;
-            chunk.blocks[f].shouldRenderFront = false;
-
-            for (int c = 0; c < i; c++){
-                if (chunk.blocks[c].x == chunk.blocks[f].x - 2) chunk.blocks[f].shouldRenderLeft = true;
-                if (chunk.blocks[c].y == chunk.blocks[f].y + 2) chunk.blocks[f].shouldRenderUp = true;
-                if (chunk.blocks[c].z == chunk.blocks[f].z - 2) chunk.blocks[f].shouldRenderFront = true;
-
-                if (chunk.blocks[c].x == chunk.blocks[f].x + 2) chunk.blocks[f].shouldRenderRight = true;
-                if (chunk.blocks[c].y == chunk.blocks[f].y - 2) chunk.blocks[f].shouldRenderDown = true;
-                if (chunk.blocks[c].z == chunk.blocks[f].z + 2) chunk.blocks[f].shouldRenderBack = true;
+    int number_of_blocks = 0;
+    int i = 0;
+    for (int x = start_x; x < start_x+16; x++){
+        for (int z = start_z; z < start_z+16; z++){
+            int height = round(16.0 + pnoise2d((double)x, (double)z, 0.11, 10, 1000000) * 3.0);
+            for (int y = start_y; y < 16 ; y++){
+                if (y < height) chunk.blocks[i] = create_buffers(basic_block_data, (x*2), (y*2), (z*2)); number_of_blocks++;  
+                i++;
             }
         }
     }
 
+    for (int f = 0; f < i; f++){ 
+        //If null, no neighbor!
+        chunk.blocks[f].shouldRenderLeft = true;
+        chunk.blocks[f].shouldRenderRight = true;
+        chunk.blocks[f].shouldRenderUp = true;
+        chunk.blocks[f].shouldRenderDown = true;
+        chunk.blocks[f].shouldRenderBack = true;
+        chunk.blocks[f].shouldRenderFront = true;
+
+        //Block * neighbors = GetAllNeighbours(&chunk, &chunk.blocks[f]);
+
+        Block * neighbour_left = GetBlockAt(&chunk, chunk.blocks[f].x - 2, 
+                        chunk.blocks[f].y, chunk.blocks[f].z);
+
+        Block * neighbour_right = GetBlockAt(&chunk, chunk.blocks[f].x + 2, 
+                        chunk.blocks[f].y, chunk.blocks[f].z);
+
+        Block * neighbour_up = GetBlockAt(&chunk, chunk.blocks[f].x, 
+                        chunk.blocks[f].y + 2, chunk.blocks[f].z);
+        
+        Block * neighbour_down = GetBlockAt(&chunk, chunk.blocks[f].x, 
+                        chunk.blocks[f].y - 2, chunk.blocks[f].z);
+
+        Block * neighbour_front = GetBlockAt(&chunk, chunk.blocks[f].x, 
+                        chunk.blocks[f].y, chunk.blocks[f].z - 2);
+                    
+        Block * neighbour_back = GetBlockAt(&chunk, chunk.blocks[f].x, 
+                        chunk.blocks[f].y, chunk.blocks[f].z + 2);
+
+        if (neighbour_up) chunk.blocks[f].shouldRenderUp = false;
+        if (neighbour_down) chunk.blocks[f].shouldRenderDown = false;
+        if (neighbour_front) chunk.blocks[f].shouldRenderFront = false;
+        if (neighbour_back) chunk.blocks[f].shouldRenderBack = false;
+        if (neighbour_right) chunk.blocks[f].shouldRenderRight = false;
+        if (neighbour_left) chunk.blocks[f].shouldRenderLeft = false;
+    }
     return chunk;
 }

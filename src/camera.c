@@ -21,16 +21,16 @@ void handle_movement(Camera * camera, GLFWwindow* window){
     glm_mat4_identity(proj);
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS){
-        camera->z += 0.3f;
+        camera->z += 0.8f;
     }
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS){
-        camera->z -= 0.3f;
+        camera->z -= 0.8f;
     }
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS){
-        camera->x += 0.3f;
+        camera->x += 0.8f;
     }
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS){
-        camera->x -= 0.3f;
+        camera->x -= 0.8f;
     }
     if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS){
         camera->y += 0.1f;

@@ -7,74 +7,39 @@
 #include<stb/stb.h>
 #include<time.h>
 
-GLfloat back[] = {
-    -0.5, -0.5,  -0.5,   1.0f, 0.0f, 0.0f,    0.0f, 0.0f, // bottom left back (0)
-    0.5, -0.5,  -0.5,   0.0f, 1.0f, 0.0f,    0.0f, 1.0f, // bottom right back(1)
-    0.5,  0.5,  -0.5,   0.0f, 0.0f, 0.0f,    1.0f, 1.0f, // top right back(2)
-   -0.5,  0.5,  -0.5,   1.0f, 0.0f, 0.0f,    1.0f, 0.0f, //top left back(3)
-};
-GLfloat front[] = {
-    -0.5, -0.5,  0.5,   1.0f, 0.0f, 0.0f,    0.0f, 0.0f, // bottom left front(4)
-    0.5, -0.5,  0.5,   0.0f, 1.0f, 0.0f,    0.0f, 1.0f, // bottom right front(5)
-    0.5,  0.5,  0.5,   0.0f, 0.0f, 0.0f,    1.0f, 1.0f, // top right front(6)
-   -0.5,  0.5,  0.5,   1.0f, 0.0f, 0.0f,    1.0f, 0.0f, //top left front(7)
-};
-GLfloat top[] = {
-   -0.5,  0.5, -0.5,   1.0f, 0.0f, 0.0f,    0.0f, 0.0f, // top left back(8)
-    0.5,  0.5, -0.5,   0.0f, 0.0f, 0.0f,    0.0f, 1.0f, // top right back(9)
-    0.5,  0.5,  0.5,   0.0f, 0.0f, 0.0f,    1.0f, 1.0f, // top right front (10)
-   -0.5,  0.5,  0.5,   1.0f, 0.0f, 0.0f,    1.0f, 0.0f, //top left front(11)
-};
-GLfloat bottom[] = {
-   -0.5, -0.5,  -0.5,   1.0f, 0.0f, 0.0f,    0.0f, 0.0f, // bottom left back(12)
-    0.5, -0.5,  -0.5,   0.0f, 1.0f, 0.0f,    0.0f, 1.0f, // bottom right back(13)
-    0.5, -0.5,  0.5,   0.0f, 1.0f, 0.0f,    1.0f, 1.0f, // bottom right front (14)
-   -0.5, -0.5,  0.5,   1.0f, 0.0f, 0.0f,    1.0f, 0.0f, //bottom left front(15)
-};
-GLfloat left[] = {
-   -0.5,  0.5, -0.5,   1.0f, 0.0f, 0.0f,     1.0f, 0.0f, // top left back(16)
-   -0.5,  0.5,  0.5,   1.0f, 0.0f, 0.0f,     1.0f, 1.0f, // top left front(17)
-   -0.5, -0.5,  0.5,   1.0f, 0.0f, 0.0f,     0.0f, 1.0f, // bottom left front(18)
-   -0.5, -0.5,  -0.5,  1.0f, 0.0f, 0.0f,     0.0f, 0.0f, // bottom left back (19)
-};
-GLfloat right[] = {
-    0.5,  0.5, -0.5,   0.0f, 0.0f, 0.0f,    1.0f, 0.0f, // top right back(20)
-    0.5,  0.5,  0.5,   0.0f, 0.0f, 0.0f,    1.0f, 1.0f, // top right front(21)
-    0.5, -0.5,  0.5,   0.0f, 1.0f, 0.0f,    0.0f, 1.0f, // bottom right front(22)
-    0.5, -0.5,  -0.5,   0.0f, 1.0f, 0.0f,    0.0f, 0.0f, // bottom right back(23)
-};
 
 
 GLfloat vertices[192] = {
-   -0.5, -0.5,  -0.5,   1.0f, 0.0f, 0.0f,    0.0f, 0.0f, // bottom left back (0)
-    0.5, -0.5,  -0.5,   0.0f, 1.0f, 0.0f,    0.0f, 1.0f, // bottom right back(1)
-    0.5,  0.5,  -0.5,   0.0f, 0.0f, 0.0f,    1.0f, 1.0f, // top right back(2)
-   -0.5,  0.5,  -0.5,   1.0f, 0.0f, 0.0f,    1.0f, 0.0f, //top left back(3)
+   -0.5, -0.5,  -0.5,   0.5f, 0.0f, 0.0f,    0.0f, 0.0f, // bottom left back (0)
+    0.5, -0.5,  -0.5,   0.0f, 0.5f, 0.0f,    0.0f, 0.49f, // bottom right back(1)
+    0.5,  0.5,  -0.5,   0.0f, 0.0f, 0.0f,    0.49f, 0.49f, // top right back(2)
+   -0.5,  0.5,  -0.5,   0.5f, 0.0f, 0.0f,    0.49f, 0.0f, //top left back(3)
 
-    -0.5, -0.5,  0.5,   1.0f, 0.0f, 0.0f,    0.0f, 0.0f, // bottom left front(4)
-    0.5, -0.5,  0.5,   0.0f, 1.0f, 0.0f,    0.0f, 1.0f, // bottom right front(5)
-    0.5,  0.5,  0.5,   0.0f, 0.0f, 0.0f,    1.0f, 1.0f, // top right front(6)
-   -0.5,  0.5,  0.5,   1.0f, 0.0f, 0.0f,    1.0f, 0.0f, //top left front(7)
+    -0.5, -0.5,  0.5,   0.5f, 0.0f, 0.0f,    0.0f, 0.0f, // bottom left front(4)
+    0.5, -0.5,  0.5,   0.0f, 0.5f, 0.0f,    0.0f, 0.49f, // bottom right front(5)
+    0.5,  0.5,  0.5,   0.0f, 0.0f, 0.0f,    0.49f, 0.49f, // top right front(6)
+   -0.5,  0.5,  0.5,   0.5f, 0.0f, 0.0f,    0.49f, 0.0f, //top left front(7)
 
-   -0.5,  0.5, -0.5,   1.0f, 0.0f, 0.0f,    0.0f, 0.0f, // top left back(8)
-    0.5,  0.5, -0.5,   0.0f, 0.0f, 0.0f,    0.0f, 1.0f, // top right back(9)
-    0.5,  0.5,  0.5,   0.0f, 0.0f, 0.0f,    1.0f, 1.0f, // top right front (10)
-   -0.5,  0.5,  0.5,   1.0f, 0.0f, 0.0f,    1.0f, 0.0f, //top left front(11)
+   -0.5,  0.5, -0.5,   0.5f, 0.0f, 0.0f,    0.0f, 0.49f, // top left back(8)
+    0.5,  0.5, -0.5,   0.0f, 0.0f, 0.0f,    0.49f, 0.49f, // top right back(9)
 
-   -0.5, -0.5,  -0.5,   1.0f, 0.0f, 0.0f,    0.0f, 0.0f, // bottom left back(12)
-    0.5, -0.5,  -0.5,   0.0f, 1.0f, 0.0f,    0.0f, 1.0f, // bottom right back(13)
-    0.5, -0.5,  0.5,   0.0f, 1.0f, 0.0f,    1.0f, 1.0f, // bottom right front (14)
-   -0.5, -0.5,  0.5,   1.0f, 0.0f, 0.0f,    1.0f, 0.0f, //bottom left front(15)
+    0.5,  0.5,  0.5,   0.0f, 0.0f, 0.0f,    0.0f, 1.0f, // top right front (10)
+   -0.5,  0.5,  0.5,   0.5f, 0.0f, 0.0f,    0.49f, 1.0f, //top left front(11)
 
-   -0.5,  0.5, -0.5,   1.0f, 0.0f, 0.0f,     1.0f, 0.0f, // top left back(16)
-   -0.5,  0.5,  0.5,   1.0f, 0.0f, 0.0f,     1.0f, 1.0f, // top left front(17)
-   -0.5, -0.5,  0.5,   1.0f, 0.0f, 0.0f,     0.0f, 1.0f, // bottom left front(18)
-   -0.5, -0.5,  -0.5,  1.0f, 0.0f, 0.0f,     0.0f, 0.0f, // bottom left back (19)
+   -0.5, -0.5,  -0.5,   0.5f, 0.0f, 0.0f,    0.0f, 0.0f, // bottom left back(12)
+    0.5, -0.5,  -0.5,   0.0f, 0.5f, 0.0f,    0.0f, 0.49f, // bottom right back(13)
+    0.5, -0.5,  0.5,   0.0f, 0.5f, 0.0f,    0.49f, 0.49f, // bottom right front (14)
+   -0.5, -0.5,  0.5,   0.5f, 0.0f, 0.0f,    0.49f, 0.0f, //bottom left front(15)
 
-    0.5,  0.5, -0.5,   0.0f, 0.0f, 0.0f,    1.0f, 0.0f, // top right back(20)
-    0.5,  0.5,  0.5,   0.0f, 0.0f, 0.0f,    1.0f, 1.0f, // top right front(21)
-    0.5, -0.5,  0.5,   0.0f, 1.0f, 0.0f,    0.0f, 1.0f, // bottom right front(22)
-    0.5, -0.5,  -0.5,   0.0f, 1.0f, 0.0f,    0.0f, 0.0f, // bottom right back(23)
+   -0.5,  0.5, -0.5,   0.5f, 0.0f, 0.0f,     0.49f, 0.0f, // top left back(16)
+   -0.5,  0.5,  0.5,   0.5f, 0.0f, 0.0f,     0.49f, 0.49f, // top left front(17)
+   -0.5, -0.5,  0.5,   0.5f, 0.0f, 0.0f,     0.0f, 0.49f, // bottom left front(18)
+   -0.5, -0.5,  -0.5,  0.5f, 0.0f, 0.0f,     0.0f, 0.0f, // bottom left back (19)
+
+    0.5,  0.5, -0.5,   0.0f, 0.0f, 0.0f,    0.49f, 0.0f, // top right back(20)
+    0.5,  0.5,  0.5,   0.0f, 0.0f, 0.0f,    0.49f, 0.49f, // top right front(21)
+    0.5, -0.5,  0.5,   0.0f, 0.5f, 0.0f,    0.0f, 0.49f, // bottom right front(22)
+    0.5, -0.5,  -0.5,   0.0f, 0.5f, 0.0f,    0.0f, 0.0f, // bottom right back(23)
 };
 
 GLuint indices[] =
@@ -149,7 +114,7 @@ const char* fragmentShaderSource = GLSL(
 );
 
 typedef struct base_info{
-    GLuint shaderProgram, VAO, VBO, EBO, texture;
+    GLuint shaderProgram, VAO, VBO, EBO, texture, texture_2;
 } BaseInfo;
 
 BaseInfo initialize_block_info(){
@@ -199,7 +164,7 @@ BaseInfo initialize_block_info(){
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     int imgWidth, imgHeight, colors;
-    unsigned char* bytes = stbi_load("/home/scriptline/Minecraft-OpenGL/src/grass.png", &imgWidth, &imgHeight, &colors, 0);
+    unsigned char* bytes = stbi_load("/home/scriptline/Minecraft-OpenGL/src/textures.png", &imgWidth, &imgHeight, &colors, 0);
 
     if (!bytes){
         printf("Unable to load image for the following reason: %s \n", stbi_failure_reason());
@@ -231,6 +196,7 @@ BaseInfo initialize_block_info(){
     basic_info.VBO = VBO;
     basic_info.EBO = EBO;
     basic_info.texture = texture;
+    
 
 
     return basic_info;
