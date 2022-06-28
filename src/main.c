@@ -6,11 +6,22 @@
 #include<cglm/clipspace/persp.h>
 #include<stb/stb.h>
 #include<stdlib.h>
+#include<pthread.h>
 
 #include "block.h"
 #include "camera.h"
 #include "chunk.h"
 #include "perlin.h"
+
+void * GenerateNewChunk(void * basicBlockData)
+{
+	BaseInfo * baseInfo = (BaseInfo *)basicBlockData;
+	Chunk chunk = generate_chunk(0, 0, 0, *baseInfo);
+	Chunk * result = malloc(sizeof(Chunk));
+	*result = chunk;
+	return (void *)result;
+	pthread_exit(NULL);
+}
 
 int main()
 {
@@ -43,10 +54,6 @@ int main()
 		}
 	}
 
-
-
-
-
 	glfwSwapInterval(1);
 
 	glEnable(GL_DEPTH_TEST);
@@ -59,6 +66,15 @@ int main()
 
 	float rotation = 0;
 
+	Chunk * chunk;
+	pthread_t th;
+	pthread_create(&th, NULL, &GenerateNewChunk, &basicBlockData);
+	pthread_join(th, (void **) &chunk);
+
+	printf("%p \n", chunk);
+	printf("%d \n", chunk->blocks[5].x);
+	chunks[0] = *chunk;
+
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	while (!glfwWindowShouldClose(window))
 	{
@@ -67,7 +83,7 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
 
 
-		printf("%f %f \n", floor(camera.x / 16), floor(camera.z / 16));
+		//printf("%f %f \n", floor(camera.x / 16), floor(camera.z / 16));
 
 
         mat4 view;

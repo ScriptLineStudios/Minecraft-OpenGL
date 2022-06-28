@@ -36,7 +36,7 @@ void handle_movement(Camera * camera, GLFWwindow* window){
         camera->y += 0.1f;
     }
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS){
-        camera->y -= 0.1f;
+        camera->y -= 0.5f;
     }
 
     if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS){
