@@ -64,7 +64,8 @@ GLuint indices[] =
 };
 
 struct block {
-    GLuint VAO, VBO, EBO, shaderProgram, texture, x, y, z;
+    GLuint VAO, VBO, EBO, shaderProgram, texture;
+    GLint x, y, z;
     GLuint * indices;
     mat4 * model;
     bool shouldRenderLeft;
@@ -197,8 +198,6 @@ BaseInfo initialize_block_info(){
     basic_info.EBO = EBO;
     basic_info.texture = texture;
     
-
-
     return basic_info;
 }
 
@@ -212,9 +211,9 @@ Block create_buffers(BaseInfo basic_info, int _x, int _y, int _z){
     block.model = &model;
     block.texture = basic_info.texture;
 
-    GLuint x = _x;
-    GLuint y = _y;
-    GLuint z = _z;
+    GLint x = _x;
+    GLint y = _y;
+    GLint z = _z;
 
     block.x = x;
     block.y = y;

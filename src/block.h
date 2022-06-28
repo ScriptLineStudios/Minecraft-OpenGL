@@ -2,7 +2,8 @@
 #define BLOCK
 
 struct block {
-    GLuint VAO, VBO, EBO, shaderProgram, texture, x, y, z;
+    GLuint VAO, VBO, EBO, shaderProgram, texture;
+    GLint x, y, z;
     GLuint indices;
     mat4 model;
     bool shouldRenderLeft;

@@ -34,39 +34,17 @@ int main()
 
 
 	BaseInfo basicBlockData = initialize_block_info();
-	static Chunk chunks[24];
-
-	chunks[0] = generate_chunk(0, 0, 0, basicBlockData);  //Top Left
-	chunks[1] = generate_chunk(16, 0, 0, basicBlockData);  //Top Left
-	chunks[2] = generate_chunk(32, 0, 0, basicBlockData);  //Top Left
-	chunks[3] = generate_chunk(48, 0, 0, basicBlockData);  //Top Left
-
-	chunks[4] = generate_chunk(0, 0, 16, basicBlockData);  //Top Left
-	chunks[5] = generate_chunk(16, 0, 16, basicBlockData);  //Top Left
-	chunks[6] = generate_chunk(32, 0, 16, basicBlockData);  //Top Left
-	chunks[7] = generate_chunk(48, 0, 16, basicBlockData);  //Top Left
-
-	chunks[8] = generate_chunk(0, 0, 32, basicBlockData);  //Top Left
-	chunks[9] = generate_chunk(16, 0, 32, basicBlockData);  //Top Left
-	chunks[10] = generate_chunk(32, 0, 32, basicBlockData);  //Top Left
-	chunks[11] = generate_chunk(48, 0, 32, basicBlockData);  //Top Left
+	static Chunk chunks[25];
+	int i = 0;
+	for (int x = 0; x < 3; x++){
+		for (int z = 0; z < 3; z++){
+			chunks[i] = generate_chunk(x*16, 0, z*16, basicBlockData);
+			i++;
+		}
+	}
 
 
 
-	chunks[12] = generate_chunk(0, 0, 48, basicBlockData);  //Top Left
-	chunks[13] = generate_chunk(16, 0, 48, basicBlockData);  //Top Left
-	chunks[14] = generate_chunk(32, 0, 48, basicBlockData);  //Top Left
-	chunks[15] = generate_chunk(48, 0, 48, basicBlockData);  //Top Left
-
-	chunks[16] = generate_chunk(0, 0, 64, basicBlockData);  //Top Left
-	chunks[17] = generate_chunk(16, 0, 64, basicBlockData);  //Top Left
-	chunks[18] = generate_chunk(32, 0, 64, basicBlockData);  //Top Left
-	chunks[19] = generate_chunk(48, 0, 64, basicBlockData);  //Top Left
-
-	chunks[20] = generate_chunk(0, 0, 80, basicBlockData);  //Top Left
-	chunks[21] = generate_chunk(16, 0, 80, basicBlockData);  //Top Left
-	chunks[22] = generate_chunk(32, 0, 80, basicBlockData);  //Top Left
-	chunks[23] = generate_chunk(48, 0, 80, basicBlockData);  //Top Left
 
 
 	glfwSwapInterval(1);
@@ -75,11 +53,7 @@ int main()
 	glDepthFunc(GL_LESS);
 
 
-
 	Camera camera;
-	camera.y = -32.0f;
-	camera.z = -33.0f;
-	camera.x = -32.0f;
 
 	int z_offset = -32;
 
@@ -92,12 +66,8 @@ int main()
 		glClearColor(0.43f, 0.69f, 1.0f, 0.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
 
-		//printf("%d \n", (int)camera.z);
 
-		/*if ((int)camera.z % 16 == 0){
-			chunks[2] = generate_chunk(0, 0, z_offset, basicBlockData);  //Top Left
-			chunks[3] = generate_chunk(16, 0, z_offset, basicBlockData);  //Top Left
-		}*/
+		printf("%f %f \n", floor(camera.x / 16), floor(camera.z / 16));
 
 
         mat4 view;
@@ -121,7 +91,7 @@ int main()
 		int projLoc = glGetUniformLocation(basicBlockData.shaderProgram, "proj");
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, (const GLfloat *)proj);
 
-		for (int j = 0; j < 24; j++){
+		for (int j = 0; j < 25; j++){
 			for (int i = 0; i < 4096; i++){
 				glm_mat4_identity(chunks[j].blocks[i].model);
 
