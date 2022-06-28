@@ -7,6 +7,7 @@
 #include<stb/stb.h>
 #include<stdlib.h>
 #include<pthread.h>
+#include<string.h>
 
 #include "block.h"
 #include "camera.h"
@@ -20,7 +21,7 @@ void * GenerateNewChunk(void * basicBlockData)
 	Chunk * result = malloc(sizeof(Chunk));
 	*result = chunk;
 	return (void *)result;
-	pthread_exit(NULL);
+	//pthread_exit(NULL);
 }
 
 int main()
@@ -43,9 +44,9 @@ int main()
 	glViewport(0, 0, 800, 800);
 
 
-
 	BaseInfo basicBlockData = initialize_block_info();
-	static Chunk chunks[25];
+	Chunk * chunks = malloc(9 * sizeof(Chunk));
+
 	int i = 0;
 	for (int x = 0; x < 3; x++){
 		for (int z = 0; z < 3; z++){
@@ -66,14 +67,8 @@ int main()
 
 	float rotation = 0;
 
-	Chunk * chunk;
 	pthread_t th;
-	pthread_create(&th, NULL, &GenerateNewChunk, &basicBlockData);
-	pthread_join(th, (void **) &chunk);
 
-	printf("%p \n", chunk);
-	printf("%d \n", chunk->blocks[5].x);
-	chunks[0] = *chunk;
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	while (!glfwWindowShouldClose(window))
@@ -82,9 +77,9 @@ int main()
 		glClearColor(0.43f, 0.69f, 1.0f, 0.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
 
-
-		//printf("%f %f \n", floor(camera.x / 16), floor(camera.z / 16));
-
+		/*Chunk * chunk;
+		pthread_create(&th, NULL, &GenerateNewChunk, &basicBlockData);
+		pthread_join(th, (void **) &chunk);*/
 
         mat4 view;
         glm_mat4_identity(view);
@@ -92,7 +87,6 @@ int main()
         glm_mat4_identity(proj);
 
     	glm_translate(view, (vec3){camera.x, camera.y, camera.z});
-		//glm_rotate_at(view, (vec3){0.0f, 1.0f, 0.0f}, camera.rotation, (vec3){0.0f, 1.0f, 0.0f});
         glm_perspective(glm_rad(45), (float)(800/800), 0.1f, 1000.0f, proj);
 
 		handle_movement(&camera, window);
@@ -107,7 +101,8 @@ int main()
 		int projLoc = glGetUniformLocation(basicBlockData.shaderProgram, "proj");
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, (const GLfloat *)proj);
 
-		for (int j = 0; j < 25; j++){
+
+		for (int j = 0; j < 9; j++){
 			for (int i = 0; i < 4096; i++){
 				glm_mat4_identity(chunks[j].blocks[i].model);
 

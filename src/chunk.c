@@ -13,6 +13,7 @@
 
 struct chunk{
     Block blocks[4096];
+    int numberBlocks;
 };
 
 typedef struct chunk Chunk;
@@ -71,15 +72,22 @@ Chunk generate_chunk(int start_x, int start_y, int start_z, BaseInfo basic_block
     int i = 0;
     for (int x = start_x; x < start_x+16; x++){
         for (int z = start_z; z < start_z+16; z++){
-            int height = round(16.0 + pnoise2d((double)x, (double)z, 0.11, 10, 1000000) * 3.0);
+            int height = 8 + pnoise2d((double)x, (double)z, 0.11, 1, 1000000) * 3.0;
+            if (height < 0) height = 1;
+            printf("%d \n", height);
             for (int y = start_y; y < 16 ; y++){
-                if (y < height) chunk.blocks[i] = create_buffers(basic_block_data, (x*2), (y*2), (z*2)); number_of_blocks++;  
+                if (y < height) 
+                {chunk.blocks[i] = create_buffers(basic_block_data, (x*2), (y*2), (z*2));
+                 number_of_blocks++;}
                 i++;
             }
         }
     }
 
-    for (int f = 0; f < i; f++){ 
+   //printf("Number of blocks in chunk: %d \n", number_of_blocks);
+    chunk.numberBlocks = number_of_blocks;
+
+    for (int f = 0; f < 4096; f++){ 
         //If null, no neighbor!
         chunk.blocks[f].shouldRenderLeft = true;
         chunk.blocks[f].shouldRenderRight = true;
