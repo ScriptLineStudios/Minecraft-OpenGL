@@ -13,16 +13,8 @@
 #include "camera.h"
 #include "chunk.h"
 #include "perlin.h"
+#include "world.h"
 
-void * GenerateNewChunk(void * basicBlockData)
-{
-	BaseInfo * baseInfo = (BaseInfo *)basicBlockData;
-	Chunk chunk = generate_chunk(0, 0, 0, *baseInfo);
-	Chunk * result = malloc(sizeof(Chunk));
-	*result = chunk;
-	return (void *)result;
-	//pthread_exit(NULL);
-}
 
 int main()
 {
@@ -43,17 +35,21 @@ int main()
 	gladLoadGL();
 	glViewport(0, 0, 800, 800);
 
-
 	BaseInfo basicBlockData = initialize_block_info();
-	Chunk * chunks = malloc(9 * sizeof(Chunk));
+	World world = GenerateWorld(basicBlockData);
+	printf("%d \n", world.numberChunks);
+
+	//printf("%d \n", world.numberChunks);
+
+	/*Chunk * world.chunks = malloc(9 * sizeof(Chunk));
 
 	int i = 0;
 	for (int x = 0; x < 3; x++){
 		for (int z = 0; z < 3; z++){
-			chunks[i] = generate_chunk(x*16, 0, z*16, basicBlockData);
+			world.chunks[i] = generate_chunk(x*16, 0, z*16, basicBlockData);
 			i++;
 		}
-	}
+	}*/
 
 	glfwSwapInterval(1);
 
@@ -80,6 +76,10 @@ int main()
 		/*Chunk * chunk;
 		pthread_create(&th, NULL, &GenerateNewChunk, &basicBlockData);
 		pthread_join(th, (void **) &chunk);*/
+    	if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS){
+			AddNewChunk(basicBlockData, &world, -16, 0);
+        	
+    	}
 
         mat4 view;
         glm_mat4_identity(view);
@@ -102,28 +102,28 @@ int main()
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, (const GLfloat *)proj);
 
 
-		for (int j = 0; j < 9; j++){
+		for (int j = 0; j < world.numberChunks; j++){
 			for (int i = 0; i < 4096; i++){
-				glm_mat4_identity(chunks[j].blocks[i].model);
+				glm_mat4_identity(world.chunks[j].blocks[i].model);
 
-				//glm_rotate(chunks[j].blocks[i].model, glm_rad(camera.rotation), (vec3){0.0f, 1.0f, 0.0f});
-				glm_translate(chunks[j].blocks[i].model, (vec3){chunks[j].blocks[i].x, chunks[j].blocks[i].y, chunks[j].blocks[i].z});
+				//glm_rotate(world.chunks[j].blocks[i].model, glm_rad(camera.rotation), (vec3){0.0f, 1.0f, 0.0f});
+				glm_translate(world.chunks[j].blocks[i].model, (vec3){world.chunks[j].blocks[i].x, world.chunks[j].blocks[i].y, world.chunks[j].blocks[i].z});
 
 				int modelLoc = glGetUniformLocation(basicBlockData.shaderProgram, "model");
-				glUniformMatrix4fv(modelLoc, 1, GL_FALSE, (const GLfloat *)chunks[j].blocks[i].model);
+				glUniformMatrix4fv(modelLoc, 1, GL_FALSE, (const GLfloat *)world.chunks[j].blocks[i].model);
 				
-				if (chunks[j].blocks[i].shouldRenderFront)
+				if (world.chunks[j].blocks[i].shouldRenderFront)
 					glDrawRangeElements(GL_TRIANGLES, 0, 6, 6, GL_UNSIGNED_INT, (void*)(0*sizeof(unsigned int))); //FRONT 
-				if (chunks[j].blocks[i].shouldRenderRight)
+				if (world.chunks[j].blocks[i].shouldRenderRight)
 					glDrawRangeElements(GL_TRIANGLES, 6, 12, 6, GL_UNSIGNED_INT, (void*)(6*sizeof(unsigned int))); //RIGHT
-				if (chunks[j].blocks[i].shouldRenderBack)
+				if (world.chunks[j].blocks[i].shouldRenderBack)
 					glDrawRangeElements(GL_TRIANGLES, 12, 18, 6, GL_UNSIGNED_INT, (void*)(12*sizeof(unsigned int))); //BACK
-				if (chunks[j].blocks[i].shouldRenderLeft)
+				if (world.chunks[j].blocks[i].shouldRenderLeft)
 					glDrawRangeElements(GL_TRIANGLES, 18, 24, 6, GL_UNSIGNED_INT, (void*)(18*sizeof(unsigned int))); //LEFT
-				if (chunks[j].blocks[i].shouldRenderDown){
+				if (world.chunks[j].blocks[i].shouldRenderDown){
 					glDrawRangeElements(GL_TRIANGLES, 24, 30, 6, GL_UNSIGNED_INT, (void*)(24*sizeof(unsigned int))); //BOTTOM
 				}
-				if (chunks[j].blocks[i].shouldRenderUp){
+				if (world.chunks[j].blocks[i].shouldRenderUp){
 					glDrawRangeElements(GL_TRIANGLES, 30, 36, 6, GL_UNSIGNED_INT, (void*)(30*sizeof(unsigned int))); //TOP
 				}
 			}
