@@ -6,9 +6,14 @@ struct world{
     int numberChunks;
 };
 
+
 typedef struct world World;
 
+typedef struct {
+	BaseInfo basicBlockData;
+	World * world;
+} Info;
 World GenerateWorld(BaseInfo basicBlockData);
-void AddNewChunk(BaseInfo basicBlockData, World * world, int x, int z);
+void * AddNewChunk(void * _info);
 
 #endif

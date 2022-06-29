@@ -6,6 +6,7 @@
 #include<cglm/clipspace/persp.h>
 #include<stb/stb.h>
 #include<stdlib.h>
+#include<pthread.h>
 
 #include "block.h"
 #include "chunk.h"
@@ -35,14 +36,22 @@ World GenerateWorld(BaseInfo basicBlockData)
     return world;
 }
 
-void AddNewChunk(BaseInfo basicBlockData, World * world, int x, int z)
+typedef struct {
+	BaseInfo basicBlockData;
+	World * world;
+} Info;
+
+void * AddNewChunk(void * _info)
 {
-    world->numberChunks++;
-    world->chunks = realloc(world->chunks, world->numberChunks * sizeof(Chunk));
-    world->chunks[world->numberChunks - 1] = generate_chunk(-16, 0, 0, basicBlockData);
+    Info * info = (Info *)_info;
+    info->world->numberChunks++;
+    info->world->chunks = realloc(info->world->chunks, info->world->numberChunks * sizeof(Chunk));
+    info->world->chunks[info->world->numberChunks - 1] = generate_chunk(-16, 0, 0, info->basicBlockData);
+    printf("Multi threaded chunk gen successful \n");
+    pthread_exit(NULL);
 }
 
-//Use this for reference i guess.
+//Use this for reference i guess
 /*void * GenerateNewChunk(void * basicBlockData)
 {
 	BaseInfo * baseInfo = (BaseInfo *)basicBlockData;

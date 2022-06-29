@@ -16,6 +16,7 @@
 #include "world.h"
 
 
+
 int main()
 {
 	glfwInit();
@@ -37,6 +38,7 @@ int main()
 
 	BaseInfo basicBlockData = initialize_block_info();
 	World world = GenerateWorld(basicBlockData);
+	
 	printf("%d \n", world.numberChunks);
 
 	//printf("%d \n", world.numberChunks);
@@ -77,7 +79,12 @@ int main()
 		pthread_create(&th, NULL, &GenerateNewChunk, &basicBlockData);
 		pthread_join(th, (void **) &chunk);*/
     	if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS){
-			AddNewChunk(basicBlockData, &world, -16, 0);
+			pthread_t th;
+			Info info;
+			info.basicBlockData = basicBlockData;
+			info.world = &world;
+			pthread_create(&th, NULL, &AddNewChunk, &info);
+			//AddNewChunk(basicBlockData, &world, -16, 0);
         	
     	}
 
