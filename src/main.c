@@ -37,7 +37,19 @@ int main()
 	glViewport(0, 0, 800, 800);
 
 	BaseInfo basicBlockData = initialize_block_info();
-	World world = GenerateWorld(basicBlockData);
+
+    World world;
+    world.numberChunks = 9;
+
+    world.chunks = malloc(sizeof(Chunk) * world.numberChunks);
+
+    int i = 0;
+	for (int x = 0; x < 3; x++){
+		for (int z = 0; z < 3; z++){
+			world.chunks[i] = generate_chunk(x*16, 0, z*16, basicBlockData);
+			i++;
+		}
+	}
 	
 	printf("%d \n", world.numberChunks);
 
@@ -56,8 +68,6 @@ int main()
 	glfwSwapInterval(1);
 
 	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LESS);
-
 
 	Camera camera;
 
