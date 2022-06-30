@@ -50,14 +50,3 @@ void * AddNewChunk(void * _info)
     printf("Multi threaded chunk gen successful \n");
     pthread_exit(NULL);
 }
-
-//Use this for reference i guess
-/*void * GenerateNewChunk(void * basicBlockData)
-{
-	BaseInfo * baseInfo = (BaseInfo *)basicBlockData;
-	Chunk chunk = generate_chunk(0, 0, 0, *baseInfo);
-	Chunk * result = malloc(sizeof(Chunk));
-	*result = chunk;
-	return (void *)result;
-	//pthread_exit(NULL);
-}*/

@@ -39,63 +39,29 @@ int main()
 	BaseInfo basicBlockData = initialize_block_info();
 
     World world;
-    world.numberChunks = 9;
-
-    world.chunks = malloc(sizeof(Chunk) * world.numberChunks);
-
-    int i = 0;
-	for (int x = 0; x < 3; x++){
-		for (int z = 0; z < 3; z++){
-			world.chunks[i] = generate_chunk(x*16, 0, z*16, basicBlockData);
-			i++;
-		}
-	}
+	world = GenerateWorld(basicBlockData);
 	
-	printf("%d \n", world.numberChunks);
-
-	//printf("%d \n", world.numberChunks);
-
-	/*Chunk * world.chunks = malloc(9 * sizeof(Chunk));
-
-	int i = 0;
-	for (int x = 0; x < 3; x++){
-		for (int z = 0; z < 3; z++){
-			world.chunks[i] = generate_chunk(x*16, 0, z*16, basicBlockData);
-			i++;
-		}
-	}*/
-
 	glfwSwapInterval(1);
 
 	glEnable(GL_DEPTH_TEST);
 
 	Camera camera;
 
-	int z_offset = -32;
-
-	float rotation = 0;
+	Info info;
+	info.basicBlockData = basicBlockData;
+	info.world = &world;
 
 	pthread_t th;
-
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	while (!glfwWindowShouldClose(window))
 	{
-		//camera.rotation += 0.1;
 		glClearColor(0.43f, 0.69f, 1.0f, 0.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
 
-		/*Chunk * chunk;
-		pthread_create(&th, NULL, &GenerateNewChunk, &basicBlockData);
-		pthread_join(th, (void **) &chunk);*/
     	if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS){
 			pthread_t th;
-			Info info;
-			info.basicBlockData = basicBlockData;
-			info.world = &world;
 			pthread_create(&th, NULL, &AddNewChunk, &info);
-			//AddNewChunk(basicBlockData, &world, -16, 0);
-        	
     	}
 
         mat4 view;
@@ -117,7 +83,6 @@ int main()
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, (const GLfloat *)view);
 		int projLoc = glGetUniformLocation(basicBlockData.shaderProgram, "proj");
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, (const GLfloat *)proj);
-
 
 		for (int j = 0; j < world.numberChunks; j++){
 			for (int i = 0; i < 4096; i++){

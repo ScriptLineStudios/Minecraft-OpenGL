@@ -7,8 +7,6 @@
 #include<stb/stb.h>
 #include<time.h>
 
-
-
 GLfloat vertices[192] = {
    -0.5, -0.5,  -0.5,   0.5f, 0.0f, 0.0f,    0.0f, 0.0f, // bottom left back (0)
     0.5, -0.5,  -0.5,   0.0f, 0.5f, 0.0f,    0.0f, 0.49f, // bottom right back(1)
@@ -165,7 +163,7 @@ BaseInfo initialize_block_info(){
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     int imgWidth, imgHeight, colors;
-    unsigned char* bytes = stbi_load("/home/scriptline/Minecraft-OpenGL/src/textures.png", &imgWidth, &imgHeight, &colors, 0);
+    unsigned char* bytes = stbi_load("assets/textures.png", &imgWidth, &imgHeight, &colors, 0);
 
     if (!bytes){
         printf("Unable to load image for the following reason: %s \n", stbi_failure_reason());
@@ -211,13 +209,9 @@ Block create_buffers(BaseInfo basic_info, int _x, int _y, int _z){
     block.model = &model;
     block.texture = basic_info.texture;
 
-    GLint x = _x;
-    GLint y = _y;
-    GLint z = _z;
-
-    block.x = x;
-    block.y = y;
-    block.z = z;
+    block.x = (GLint) _x;
+    block.y = (GLint) _y;
+    block.z = (GLint) _z;
 
     block.indices = indices;
     return block;
