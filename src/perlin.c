@@ -98,7 +98,7 @@ double pnoise1d(double x, double persistence, int octaves, int seed) {
 double pnoise2d(double x, double y, double persistence, int octaves, int seed) {
    double total = 0.0;
    double frequency = 0.2;
-   double amplitude = 5.0;
+   double amplitude = 1.0;
    int i = 0;
    
    for(i = 0; i < octaves; i++) {

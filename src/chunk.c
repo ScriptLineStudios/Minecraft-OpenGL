@@ -72,7 +72,7 @@ Chunk generate_chunk(int start_x, int start_y, int start_z, BaseInfo basic_block
     int i = 0;
     for (int x = start_x; x < start_x+16; x++){
         for (int z = start_z; z < start_z+16; z++){
-            int height = 8 + pnoise2d((double)x, (double)z, 0.11, 1, 1000000) * 3.0;
+            int height = 14 + pnoise2d((double)x, (double)z, 0.11, 1, 1000000) * 3.0;
             if (height < 0) height = 1;
             for (int y = start_y; y < 16 ; y++){
                 if (y < height) 
