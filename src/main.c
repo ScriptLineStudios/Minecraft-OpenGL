@@ -47,6 +47,10 @@ int main()
 
 	Camera camera;
 
+	camera.x = -16;
+	camera.z = -16;
+
+
 	Info info;
 	info.basicBlockData = basicBlockData;
 	info.world = &world;
@@ -84,6 +88,10 @@ int main()
 		int projLoc = glGetUniformLocation(basicBlockData.shaderProgram, "proj");
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, (const GLfloat *)proj);
 
+	//printf("%d %d \n", (int)floor(camera.x / 32) + 1, (int)floor(camera.z / 32) + 1);
+
+
+		bool shouldGenerateChunk = true;
 		for (int j = 0; j < world.numberChunks; j++){
 			for (int i = 0; i < 4096; i++){
 				glm_mat4_identity(world.chunks[j].blocks[i].model);
@@ -109,7 +117,22 @@ int main()
 					glDrawRangeElements(GL_TRIANGLES, 30, 36, 6, GL_UNSIGNED_INT, (void*)(30*sizeof(unsigned int))); //TOP
 				}
 			}
+			if (shouldGenerateChunk)
+			{
+				if (world.chunks[j].x == -((int)floor(camera.x / 32) + 1) &&
+					world.chunks[j].z == -((int)floor(camera.z / 32) + 1)){
+						shouldGenerateChunk = false;
+				}
+			}
 		} 
+		if (shouldGenerateChunk == true)
+		{
+			pthread_t th;
+			info.generateX = -((int)floor(camera.x / 32) + 1) * 16;
+			info.generateZ = -((int)floor(camera.z / 32) + 1) * 16;
+
+			pthread_create(&th, NULL, &AddNewChunk, &info);
+		}
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

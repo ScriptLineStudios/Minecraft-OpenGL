@@ -14,6 +14,7 @@
 struct chunk{
     Block blocks[4096];
     int numberBlocks;
+    int x, z;
 };
 
 typedef struct chunk Chunk;

@@ -7,6 +7,7 @@
 #include<stb/stb.h>
 #include<stdlib.h>
 #include<pthread.h>
+#include<string.h>
 
 #include "block.h"
 #include "chunk.h"
@@ -29,6 +30,8 @@ World GenerateWorld(BaseInfo basicBlockData)
 	for (int x = 0; x < 3; x++){
 		for (int z = 0; z < 3; z++){
 			world.chunks[i] = generate_chunk(x*16, 0, z*16, basicBlockData);
+            world.chunks[i].x = x;
+            world.chunks[i].z = z;
 			i++;
 		}
 	}
@@ -39,14 +42,23 @@ World GenerateWorld(BaseInfo basicBlockData)
 typedef struct {
 	BaseInfo basicBlockData;
 	World * world;
+    int generateX, generateZ;
 } Info;
+
+void * RemoveChunk(void * _info)
+{
+    Info * info = (Info *)_info;
+    info->world->numberChunks--;
+    pthread_exit(NULL);
+}
 
 void * AddNewChunk(void * _info)
 {
     Info * info = (Info *)_info;
     info->world->numberChunks++;
     info->world->chunks = realloc(info->world->chunks, info->world->numberChunks * sizeof(Chunk));
-    info->world->chunks[info->world->numberChunks - 1] = generate_chunk(-16, 0, 0, info->basicBlockData);
-    printf("Multi threaded chunk gen successful \n");
+    info->world->chunks[info->world->numberChunks - 1] = generate_chunk(info->generateX, 0, info->generateZ, info->basicBlockData);
+    info->world->chunks[info->world->numberChunks - 1].x = info->generateX / 16;
+    info->world->chunks[info->world->numberChunks - 1].z = info->generateZ / 16;
     pthread_exit(NULL);
 }
