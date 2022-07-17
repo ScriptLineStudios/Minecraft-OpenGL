@@ -57,6 +57,9 @@ int main()
 
 	pthread_t th;
 
+	bool isGeneratingChunk = false;
+
+
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	while (!glfwWindowShouldClose(window))
 	{
@@ -122,6 +125,7 @@ int main()
 				if (world.chunks[j].x == -((int)floor(camera.x / 32) + 1) &&
 					world.chunks[j].z == -((int)floor(camera.z / 32) + 1)){
 						shouldGenerateChunk = false;
+						isGeneratingChunk = false;
 				}
 			}
 		} 
@@ -131,8 +135,16 @@ int main()
 			info.generateX = -((int)floor(camera.x / 32) + 1) * 16;
 			info.generateZ = -((int)floor(camera.z / 32) + 1) * 16;
 
-			pthread_create(&th, NULL, &AddNewChunk, &info);
+			if (!isGeneratingChunk)
+			{
+				isGeneratingChunk = true;
+				printf("Generating ... \n");
+				pthread_create(&th, NULL, &AddNewChunk, &info);
+			}
+			shouldGenerateChunk = false;
 		}
+
+		printf("%d \n", world.numberChunks);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
