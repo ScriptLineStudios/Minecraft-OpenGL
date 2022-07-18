@@ -13,6 +13,7 @@ typedef struct {
 	BaseInfo basicBlockData;
 	World * world;
     int generateX, generateZ;
+    int removeX, removeZ;
 } Info;
 
 World GenerateWorld(BaseInfo basicBlockData);

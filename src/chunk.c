@@ -15,6 +15,7 @@ struct chunk{
     Block blocks[4096];
     int numberBlocks;
     int x, z;
+    bool shouldRender;
 };
 
 typedef struct chunk Chunk;
@@ -69,13 +70,14 @@ Block * GetAllNeighbours(Chunk * chunk, Block * block)
 
 Chunk generate_chunk(int start_x, int start_y, int start_z, BaseInfo basic_block_data){
     Chunk chunk;
+    chunk.shouldRender = true;
     int number_of_blocks = 0;
     int i = 0;
     for (int x = start_x; x < start_x+16; x++){
         for (int z = start_z; z < start_z+16; z++){
             int height = 14 + pnoise2d((double)x, (double)z, 0.11, 1, 1000000) * 3.0;
             if (height < 0) height = 1;
-            for (int y = start_y; y < 16 ; y++){
+            for (int y = start_y; y < height; y++){
                 if (y < height) 
                 {chunk.blocks[i] = create_buffers(basic_block_data, (x*2), (y*2), (z*2));
                  number_of_blocks++;}

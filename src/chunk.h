@@ -5,6 +5,7 @@ struct chunk{
 	Block blocks[4096];
     int numberBlocks;
     int x, z;
+    bool shouldRender;
 };
 
 typedef struct chunk Chunk;

@@ -43,12 +43,34 @@ typedef struct {
 	BaseInfo basicBlockData;
 	World * world;
     int generateX, generateZ;
+    int removeX, removeZ;
 } Info;
+
+Chunk * removeElement(Chunk * array, int sizeOfArray, int indexToRemove)
+{
+    Chunk * temp = malloc((sizeOfArray - 1) * sizeof(Chunk)); // allocate an array with a size 1 less than the current one
+
+    if (indexToRemove != 0)
+        memcpy(temp, array, indexToRemove * sizeof(Chunk)); // copy everything BEFORE the index
+
+    if (indexToRemove != (sizeOfArray - 1))
+        memcpy(temp+indexToRemove, array+indexToRemove+1, (sizeOfArray - indexToRemove - 1) * sizeof(Chunk)); // copy everything AFTER the index
+          
+    free(array);
+    return temp;
+}
 
 void * RemoveChunk(void * _info)
 {
     Info * info = (Info *)_info;
-    info->world->numberChunks--;
+    for (int i = 0; i < info->world->numberChunks; i++)
+    {
+        if (info->world->chunks[i].x == info->removeX && info->world->chunks[i].z == info->removeZ)
+        {
+            printf("Index found: %d \n", i);
+            info->world->chunks[i].shouldRender = false;
+        }
+    }
     pthread_exit(NULL);
 }
 

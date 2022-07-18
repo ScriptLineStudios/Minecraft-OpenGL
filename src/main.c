@@ -71,6 +71,13 @@ int main()
 			pthread_create(&th, NULL, &AddNewChunk, &info);
     	}
 
+    	if (glfwGetKey(window, GLFW_KEY_Y) == GLFW_PRESS){
+			pthread_t th;
+			info.removeX = 0;
+			info.removeZ = 0;
+			pthread_create(&th, NULL, &RemoveChunk, &info);
+    	}
+
         mat4 view;
         glm_mat4_identity(view);
         mat4 proj;
@@ -96,28 +103,30 @@ int main()
 
 		bool shouldGenerateChunk = true;
 		for (int j = 0; j < world.numberChunks; j++){
-			for (int i = 0; i < 4096; i++){
-				glm_mat4_identity(world.chunks[j].blocks[i].model);
+			if (world.chunks[j].shouldRender){
+				for (int i = 0; i < 4096; i++){
+					glm_mat4_identity(world.chunks[j].blocks[i].model);
 
-				//glm_rotate(world.chunks[j].blocks[i].model, glm_rad(camera.rotation), (vec3){0.0f, 1.0f, 0.0f});
-				glm_translate(world.chunks[j].blocks[i].model, (vec3){world.chunks[j].blocks[i].x, world.chunks[j].blocks[i].y, world.chunks[j].blocks[i].z});
+					//glm_rotate(world.chunks[j].blocks[i].model, glm_rad(camera.rotation), (vec3){0.0f, 1.0f, 0.0f});
+					glm_translate(world.chunks[j].blocks[i].model, (vec3){world.chunks[j].blocks[i].x, world.chunks[j].blocks[i].y, world.chunks[j].blocks[i].z});
 
-				int modelLoc = glGetUniformLocation(basicBlockData.shaderProgram, "model");
-				glUniformMatrix4fv(modelLoc, 1, GL_FALSE, (const GLfloat *)world.chunks[j].blocks[i].model);
-				
-				if (world.chunks[j].blocks[i].shouldRenderFront)
-					glDrawRangeElements(GL_TRIANGLES, 0, 6, 6, GL_UNSIGNED_INT, (void*)(0*sizeof(unsigned int))); //FRONT 
-				if (world.chunks[j].blocks[i].shouldRenderRight)
-					glDrawRangeElements(GL_TRIANGLES, 6, 12, 6, GL_UNSIGNED_INT, (void*)(6*sizeof(unsigned int))); //RIGHT
-				if (world.chunks[j].blocks[i].shouldRenderBack)
-					glDrawRangeElements(GL_TRIANGLES, 12, 18, 6, GL_UNSIGNED_INT, (void*)(12*sizeof(unsigned int))); //BACK
-				if (world.chunks[j].blocks[i].shouldRenderLeft)
-					glDrawRangeElements(GL_TRIANGLES, 18, 24, 6, GL_UNSIGNED_INT, (void*)(18*sizeof(unsigned int))); //LEFT
-				if (world.chunks[j].blocks[i].shouldRenderDown){
-					glDrawRangeElements(GL_TRIANGLES, 24, 30, 6, GL_UNSIGNED_INT, (void*)(24*sizeof(unsigned int))); //BOTTOM
-				}
-				if (world.chunks[j].blocks[i].shouldRenderUp){
-					glDrawRangeElements(GL_TRIANGLES, 30, 36, 6, GL_UNSIGNED_INT, (void*)(30*sizeof(unsigned int))); //TOP
+					int modelLoc = glGetUniformLocation(basicBlockData.shaderProgram, "model");
+					glUniformMatrix4fv(modelLoc, 1, GL_FALSE, (const GLfloat *)world.chunks[j].blocks[i].model);
+					
+					if (world.chunks[j].blocks[i].shouldRenderFront)
+						glDrawRangeElements(GL_TRIANGLES, 0, 6, 6, GL_UNSIGNED_INT, (void*)(0*sizeof(unsigned int))); //FRONT 
+					if (world.chunks[j].blocks[i].shouldRenderRight)
+						glDrawRangeElements(GL_TRIANGLES, 6, 12, 6, GL_UNSIGNED_INT, (void*)(6*sizeof(unsigned int))); //RIGHT
+					if (world.chunks[j].blocks[i].shouldRenderBack)
+						glDrawRangeElements(GL_TRIANGLES, 12, 18, 6, GL_UNSIGNED_INT, (void*)(12*sizeof(unsigned int))); //BACK
+					if (world.chunks[j].blocks[i].shouldRenderLeft)
+						glDrawRangeElements(GL_TRIANGLES, 18, 24, 6, GL_UNSIGNED_INT, (void*)(18*sizeof(unsigned int))); //LEFT
+					if (world.chunks[j].blocks[i].shouldRenderDown){
+						glDrawRangeElements(GL_TRIANGLES, 24, 30, 6, GL_UNSIGNED_INT, (void*)(24*sizeof(unsigned int))); //BOTTOM
+					}
+					if (world.chunks[j].blocks[i].shouldRenderUp){
+						glDrawRangeElements(GL_TRIANGLES, 30, 36, 6, GL_UNSIGNED_INT, (void*)(30*sizeof(unsigned int))); //TOP
+					}
 				}
 			}
 			if (shouldGenerateChunk)
@@ -137,14 +146,13 @@ int main()
 
 			if (!isGeneratingChunk)
 			{
-				isGeneratingChunk = true;
-				printf("Generating ... \n");
-				pthread_create(&th, NULL, &AddNewChunk, &info);
+				//isGeneratingChunk = true;
+			//	printf("Generating ... \n");
+				//pthread_create(&th, NULL, &AddNewChunk, &info);
 			}
 			shouldGenerateChunk = false;
 		}
 
-		printf("%d \n", world.numberChunks);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
