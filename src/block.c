@@ -13,7 +13,7 @@ GLfloat vertices[192] = {
     0.5,  0.5,  -0.5,   0.0f, 0.0f, 0.0f,    0.49f, 0.49f, // top right back(2)
    -0.5,  0.5,  -0.5,   0.5f, 0.0f, 0.0f,    0.49f, 0.0f, //top left back(3)
 
-    -0.5, -0.5,  0.5,   0.5f, 0.0f, 0.0f,    0.0f, 0.0f, // bottom left front(4)
+   -0.5, -0.5,  0.5,   0.5f, 0.0f, 0.0f,    0.0f, 0.0f, // bottom left front(4)
     0.5, -0.5,  0.5,   0.0f, 0.5f, 0.0f,    0.0f, 0.49f, // bottom right front(5)
     0.5,  0.5,  0.5,   0.0f, 0.0f, 0.0f,    0.49f, 0.49f, // top right front(6)
    -0.5,  0.5,  0.5,   0.5f, 0.0f, 0.0f,    0.49f, 0.0f, //top left front(7)
@@ -86,7 +86,6 @@ const char* vertexShaderSource = GLSL(
     layout (location = 2) in vec2 aTex;
 
     out vec3 color;
-
     out vec2 texCoord;
 
     uniform mat4 model;
@@ -164,7 +163,7 @@ BaseInfo initialize_block_info(){
 
     int imgWidth, imgHeight, colors;
     unsigned char* bytes = stbi_load("assets/textures.png", &imgWidth, &imgHeight, &colors, 0);
-
+    
     if (!bytes){
         printf("Unable to load image for the following reason: %s \n", stbi_failure_reason());
     }
@@ -198,7 +197,6 @@ BaseInfo initialize_block_info(){
     
     return basic_info;
 }
-
 
 Block create_buffers(BaseInfo basic_info, int _x, int _y, int _z){
     Block block;

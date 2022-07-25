@@ -14,7 +14,6 @@ struct camera {
 typedef struct camera Camera;
 
 void handle_movement(Camera * camera, GLFWwindow* window){
-
     mat4 view;
     glm_mat4_identity(view);
     mat4 proj;

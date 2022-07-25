@@ -22,13 +22,13 @@ typedef struct world World;
 World GenerateWorld(BaseInfo basicBlockData)
 {
     World world;
-    world.numberChunks = 9;
+    world.numberChunks = 1;
 
     world.chunks = malloc(sizeof(Chunk) * world.numberChunks);
 
     int i = 0;
-	for (int x = 0; x < 3; x++){
-		for (int z = 0; z < 3; z++){
+	for (int x = 0; x < 1; x++){
+		for (int z = 0; z < 1; z++){
 			world.chunks[i] = generate_chunk(x*16, 0, z*16, basicBlockData);
             world.chunks[i].x = x;
             world.chunks[i].z = z;

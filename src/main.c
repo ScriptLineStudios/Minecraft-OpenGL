@@ -15,8 +15,6 @@
 #include "perlin.h"
 #include "world.h"
 
-
-
 int main()
 {
 	glfwInit();
@@ -50,7 +48,6 @@ int main()
 	camera.x = -16;
 	camera.z = -16;
 
-
 	Info info;
 	info.basicBlockData = basicBlockData;
 	info.world = &world;
@@ -58,7 +55,6 @@ int main()
 	pthread_t th;
 
 	bool isGeneratingChunk = false;
-
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	while (!glfwWindowShouldClose(window))
@@ -72,10 +68,14 @@ int main()
     	}
 
     	if (glfwGetKey(window, GLFW_KEY_Y) == GLFW_PRESS){
-			pthread_t th;
-			info.removeX = 0;
-			info.removeZ = 0;
-			pthread_create(&th, NULL, &RemoveChunk, &info);
+			for (int x = 0; x <= 3; x++){
+				for (int z = 0; z <= 3; z++){
+					pthread_t th;
+					info.removeX = x;
+					info.removeZ = z;
+					pthread_create(&th, NULL, &RemoveChunk, &info);
+				}
+			}
     	}
 
         mat4 view;
@@ -99,8 +99,6 @@ int main()
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, (const GLfloat *)proj);
 
 	//printf("%d %d \n", (int)floor(camera.x / 32) + 1, (int)floor(camera.z / 32) + 1);
-
-
 		bool shouldGenerateChunk = true;
 		for (int j = 0; j < world.numberChunks; j++){
 			if (world.chunks[j].shouldRender){
@@ -133,8 +131,11 @@ int main()
 			{
 				if (world.chunks[j].x == -((int)floor(camera.x / 32) + 1) &&
 					world.chunks[j].z == -((int)floor(camera.z / 32) + 1)){
-						shouldGenerateChunk = false;
-						isGeneratingChunk = false;
+						if (world.chunks[j].shouldRender){
+							shouldGenerateChunk = false;
+							isGeneratingChunk = false;
+						}
+						else world.chunks[j].shouldRender = true;
 				}
 			}
 		} 
@@ -146,13 +147,12 @@ int main()
 
 			if (!isGeneratingChunk)
 			{
-				//isGeneratingChunk = true;
-			//	printf("Generating ... \n");
-				//pthread_create(&th, NULL, &AddNewChunk, &info);
+				isGeneratingChunk = true;
+				printf("Generating ... \n");
+				pthread_create(&th, NULL, &AddNewChunk, &info);
 			}
 			shouldGenerateChunk = false;
 		}
-
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
